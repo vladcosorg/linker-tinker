@@ -47,6 +47,7 @@
     "oclif": "^3",
     "shx": "^0.3.3",
     "ts-node": "^10.9.1",
+    "tsc-alias": "^1.8.2",
     "tslib": "^2.4.1",
     "typescript": "^4.9.3",
     "vite-tsconfig-paths": "^3.6.0",
@@ -68,13 +69,13 @@
     }
   },
   "scripts": {
-    "buildd": "shx rm -rf dist && tsc -b",
+    "build": "shx rm -rf dist && tsc -b && tsc-alias",
     "watch": "tsc -w",
     "lint": "eslint . && prettier --write .",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "yarn lint",
     "prepackk": "yarn build && oclif manifest && oclif readme",
-    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "testе": "mocha --forbid-only \"test/**/*.test.ts\"",
     "vitest": "vitest",
     "version": "oclif readme && git add README.md"
   },

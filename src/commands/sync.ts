@@ -5,7 +5,6 @@ import { watch } from 'chokidar'
 import fs from 'fs-extra'
 import { Listr, ListrTask } from 'listr2'
 import notifier from 'node-notifier'
-import onExit from 'signal-exit'
 
 import { deferred } from '@/lib/deferred'
 import {
@@ -94,28 +93,6 @@ export default class Sync extends Command {
       },
       this.startWatcher(),
     ])
-
-    process.on('SIGINT', () => {
-      console.log('SIGINT')
-      new Promise((resolve) => {
-        setTimeout(() => {
-          console.log('resolved')
-          resolve(true)
-        }, 1000)
-      }).then(() => {
-        console.log('aaa')
-      })
-    })
-    onExit((code, signal) => {
-      console.log(code)
-
-      // this.tasks.run([
-      //   {
-      //     title: 'aaaa',
-      //     task: () => 'done',
-      //   },
-      // ])
-    })
 
     await this.tasks.runAll()
   }
