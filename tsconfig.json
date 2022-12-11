@@ -5,8 +5,7 @@
     "baseUrl": "./",
     "declaration": true,
     "importHelpers": true,
-    "module": "ES2020",
-    "moduleResolution": "node",
+    "module": "commonjs",
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
@@ -19,7 +18,6 @@
     "./src/**/*"
   ],
   "ts-node": {
-    "esm": true,
     "require": ["tsconfig-paths/register"],
     "logError": true
   }
