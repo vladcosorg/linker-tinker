@@ -31,7 +31,7 @@
     "zod": "^3.19.1"
   },
   "devDependencies": {
-    "@oclif/test": "^2.2.12",
+    "@oclif/test": "^2.2.15",
     "@types/chai": "^4",
     "@types/chokidar": "^2.1.3",
     "@types/fs-extra": "^9.0.13",
