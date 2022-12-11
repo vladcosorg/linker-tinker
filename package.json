@@ -8,10 +8,10 @@
     "lnt": "./bin/run"
   },
   "prettier": "chetzof-lint-config/prettier/.prettierrc.js",
-  "homepage": "https://github.com/chetzof/linktink",
+  "homepage": "https://github.com/chetzof/link-and-tink",
   "license": "MIT",
   "main": "dist/index.js",
-  "repository": "chetzof/linktink",
+  "repository": "chetzof/link-and-tink",
   "files": [
     "/bin",
     "/dist",
