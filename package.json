@@ -4,7 +4,8 @@
   "description": "oclif example Hello World CLI",
   "author": "chetzof @chetzof",
   "bin": {
-    "linktink": "./bin/run"
+    "link-and-tink": "./bin/run",
+    "lnt": "./bin/run"
   },
   "prettier": "chetzof-lint-config/prettier/.prettierrc.js",
   "homepage": "https://github.com/chetzof/linktink",
