@@ -21,9 +21,14 @@
     "@oclif/core": "^1.19.1",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^2.1.7",
+    "chalk": "4.1.2",
     "chokidar": "^3.5.3",
     "fs-extra": "^11.1.0",
-    "tsconfig-paths": "^4.1.1"
+    "listr2": "^5.0.6",
+    "log-symbols": "4.0.0",
+    "node-notifier": "^10.0.1",
+    "tsconfig-paths": "^4.1.1",
+    "zod": "^3.19.1"
   },
   "devDependencies": {
     "@oclif/test": "^2.2.12",
@@ -32,10 +37,12 @@
     "@types/fs-extra": "^9.0.13",
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.18.4",
+    "@types/node-notifier": "^8.0.2",
     "chai": "^4",
     "chetzof-lint-config": "^1.0.4",
     "eslint-config-oclif": "^4",
     "eslint-config-oclif-typescript": "^1.0.3",
+    "eslint-define-config": "^1.12.0",
     "mocha": "^9",
     "oclif": "^3",
     "shx": "^0.3.3",
@@ -61,12 +68,12 @@
     }
   },
   "scripts": {
-    "build": "shx rm -rf dist && tsc -b",
+    "buildd": "shx rm -rf dist && tsc -b",
     "watch": "tsc -w",
     "lint": "eslint . && prettier --write .",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "yarn lint",
-    "prepack": "yarn build && oclif manifest && oclif readme",
+    "prepackk": "yarn build && oclif manifest && oclif readme",
     "test": "mocha --forbid-only \"test/**/*.test.ts\"",
     "vitest": "vitest",
     "version": "oclif readme && git add README.md"
