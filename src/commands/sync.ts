@@ -69,7 +69,6 @@ export default class Sync extends Command {
           ),
       },
       {
-        enabled: false,
         title: 'Dependent package installation in the the host package',
         task: (context, task): Listr =>
           task.newListr(

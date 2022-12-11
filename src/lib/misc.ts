@@ -102,7 +102,7 @@ export async function installPackage(
   dependencyName: string,
 ): Promise<void> {
   await execNpm(`install  '${dependencyName}'`, {
-    options: ['save-dev'],
+    options: ['no-save'],
     cwd: packagePath,
   })
 }

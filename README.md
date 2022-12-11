@@ -16,11 +16,11 @@ oclif example Hello World CLI
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g linkandtink
+$ npm install -g link-and-tink
 $ linktink COMMAND
 running command...
 $ linktink (--version)
-linkandtink/1.0.0 darwin-arm64 node-v16.17.0
+link-and-tink/1.0.0 darwin-arm64 node-v16.17.0
 $ linktink --help [COMMAND]
 USAGE
   $ linktink COMMAND
@@ -79,7 +79,7 @@ EXAMPLES
   $ linktink plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.7/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.8/src/commands/plugins/index.ts)_
 
 ## `linktink plugins:install PLUGIN...`
 
@@ -307,5 +307,5 @@ DESCRIPTION
   Start syncing the directory
 ```
 
-_See code: [dist/commands/sync.ts](https://github.com/chetzof/linktink/blob/v1.0.0/dist/commands/sync.ts)_
+_See code: [dist/commands/sync.ts](https://github.com/chetzof/link-and-tink/blob/v1.0.0/dist/commands/sync.ts)_
 <!-- commandsstop -->
