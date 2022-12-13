@@ -30,14 +30,3 @@ it('should return a pack list', async () => {
   expect(result).toBeInstanceOf(Array)
   expect(result[0]).toMatch(packageRoot)
 })
-
-it('should return whether an input is a part of a pack list', () => {
-  const packList = ['package.json', 'dist/index.js']
-  expect(
-    isInPackList(
-      path.resolve('.'),
-      path.resolve(path.join('.', 'package.json')),
-      packList,
-    ),
-  ).toBe(true)
-})
