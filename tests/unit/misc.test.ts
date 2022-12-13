@@ -24,20 +24,20 @@ it('should return a path to a package in node_modules', async () => {
   )
 })
 
-it('should return a pack list', () => {
+it('should return a pack list', async () => {
   const packageRoot = path.resolve('.')
-  const result = getPackList(path.resolve('.'))
+  const result = await getPackList(path.resolve('.'))
   expect(result).toBeInstanceOf(Array)
   expect(result[0]).toMatch(packageRoot)
 })
 
-// it('should return whether an input is a part of a pack list', () => {
-//   const packList = ['package.json', 'dist/index.js']
-//   expect(
-//     isInPackList(
-//       path.resolve('.'),
-//       path.resolve(path.join('.', 'package.json')),
-//       packList,
-//     ),
-//   ).toBe(true)
-// })
+it('should return whether an input is a part of a pack list', () => {
+  const packList = ['package.json', 'dist/index.js']
+  expect(
+    isInPackList(
+      path.resolve('.'),
+      path.resolve(path.join('.', 'package.json')),
+      packList,
+    ),
+  ).toBe(true)
+})

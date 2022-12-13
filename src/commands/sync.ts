@@ -1,12 +1,13 @@
 import path from 'node:path'
 
-import { Command } from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import { watch } from 'chokidar'
 import fs from 'fs-extra'
 import { Listr, ListrTask } from 'listr2'
 import notifier from 'node-notifier'
 
 import { deferred } from '@/lib/deferred'
+import { removeFileAndContainingDirectoryIfEmpty } from '@/lib/fs'
 import {
   copyFile,
   formatPathToRelative,
@@ -15,7 +16,6 @@ import {
   getTargetPath,
   installPackage,
   isPackageInstalled,
-  removeFileOrDirectory,
 } from '@/lib/misc'
 import { createTaskFactory } from '@/lib/tasks'
 
@@ -27,25 +27,30 @@ interface Context {
 
 export default class Sync extends Command {
   static override description = 'Start syncing the directory'
-
   static override args = [
     { name: 'from', description: 'Source package', required: true },
     { name: 'to', description: 'Target package', required: true },
   ] satisfies NonNullable<typeof Command['args']>
 
-  private tasks = createTaskFactory<Context>()
+  static override flags = {
+    verbose: Flags.boolean({ char: 'v' }),
+  }
 
   async run(): Promise<void> {
-    const { args } = (await this.parse(Sync)) as {
-      args: Record<'from' | 'to', string>
-    }
-    this.tasks.ctx = {
-      sourcePackagePath: path.resolve(args.from),
-      targetPackagePath: path.resolve(args.to),
-      syncPaths: path.resolve(args.from),
+    const input = await this.parse(Sync)
+    const inputArguments = input.args as Record<'from' | 'to', string>
+    const inputFlags = input.flags
+    const tasks = createTaskFactory<Context>({
+      renderer: inputFlags.verbose ? 'simple' : 'default',
+    })
+
+    tasks.ctx = {
+      sourcePackagePath: path.resolve(inputArguments.from),
+      targetPackagePath: path.resolve(inputArguments.to),
+      syncPaths: path.resolve(inputArguments.from),
     }
 
-    this.tasks.add([
+    tasks.add([
       {
         title: 'Source package verification',
         task: (context, task): Listr =>
@@ -93,7 +98,7 @@ export default class Sync extends Command {
       this.startWatcher(),
     ])
 
-    await this.tasks.runAll()
+    await tasks.runAll()
   }
 
   private startWatcher(): ListrTask<Context> {
@@ -124,17 +129,26 @@ export default class Sync extends Command {
         const newList = task.newListr([], { exitOnError: false })
 
         let { resolve, reject } = createIntermediateTask(newList)
-
-        watch(context.syncPaths, {
+        watch(context.sourcePackagePath, {
           ignoreInitial: true,
           persistent: true,
+          ignored: ['**/.git/**', '**/node_modules/**'],
         }).on('all', (eventName, sourcePath, stats) => {
+          // console.log(eventName)
           void getTargetPath(
             sourcePath,
             context.sourcePackagePath,
             context.targetPackagePath,
           )
             .then(async (targetPath) => {
+              if (eventName === 'add') {
+                context.syncPaths = await getPackList(context.sourcePackagePath)
+              }
+
+              if (!context.syncPaths.includes(sourcePath)) {
+                return
+              }
+
               switch (eventName) {
                 case 'add':
                 case 'change': {
@@ -164,9 +178,8 @@ export default class Sync extends Command {
                   break
                 }
 
-                case 'unlink':
-                case 'unlinkDir': {
-                  await removeFileOrDirectory(targetPath)
+                case 'unlink': {
+                  await removeFileAndContainingDirectoryIfEmpty(targetPath)
                   resolve(`Removed ${targetPath}`)
                   ;({ resolve, reject } = createIntermediateTask(newList))
                   break

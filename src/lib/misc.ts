@@ -75,8 +75,9 @@ function getValidationRules(packageRoot: string) {
 export async function getPackList(
   sourcePackageRoot: string,
 ): Promise<z.infer<ReturnType<typeof getValidationRules>>> {
+  // console.log(await execNpm('', { options: ['version'] }))
   const output = await execNpm('pack', {
-    options: ['dry-run', 'json'],
+    options: ['dry-run', 'json', 'ignore-scripts', 'ignore-prepublish'],
     cwd: sourcePackageRoot,
   })
   // console.log(output)

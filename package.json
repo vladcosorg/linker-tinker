@@ -20,11 +20,14 @@
   ],
   "dependencies": {
     "@oclif/core": "^1.21.0",
+    "@oclif/plugin-autocomplete": "^1.3.7",
     "@oclif/plugin-help": "^5",
-    "@oclif/plugin-plugins": "^2.1.8",
+    "@oclif/plugin-not-found": "^2.3.9",
+    "@oclif/plugin-warn-if-update-available": "^2.0.16",
     "chalk": "5.2.0",
     "chokidar": "^3.5.3",
     "fs-extra": "^11.1.0",
+    "fs-jetpack": "^5.1.0",
     "listr2": "^5.0.6",
     "log-symbols": "5.1.0",
     "node-notifier": "^10.0.1",
@@ -46,39 +49,36 @@
     "eslint-define-config": "^1.12.0",
     "mocha": "^10",
     "oclif": "^3",
+    "semantic-release": "^19.0.5",
     "shx": "^0.3.4",
     "ts-node": "^10.9.1",
     "tsc-alias": "^1.8.2",
     "tslib": "^2.4.1",
     "typescript": "^4.9.4",
     "vite-tsconfig-paths": "^4.0.2",
-    "vitest": "^0.25.7",
-    "semantic-release": "^19.0.5"
+    "vitest": "^0.25.7"
   },
   "oclif": {
     "bin": "linktink",
     "dirname": "linktink",
+    "default": "sync",
     "commands": "./dist/commands",
     "plugins": [
       "@oclif/plugin-help",
-      "@oclif/plugin-plugins"
-    ],
-    "topicSeparator": " ",
-    "topics": {
-      "hello": {
-        "description": "Say hello to the world and others"
-      }
-    }
+      "@oclif/plugin-autocomplete",
+      "@oclif/plugin-warn-if-update-available",
+      "@oclif/plugin-not-found"
+    ]
   },
   "scripts": {
     "build": "shx rm -rf dist && tsc -b && tsc-alias",
     "watch": "tsc -w",
     "lint": "eslint . && prettier --write .",
     "postpack": "shx rm -f oclif.manifest.json",
-    "posttest": "yarn lint",
-    "prepack": "yarn build && oclif manifest && oclif readme",
-    "testе": "mocha --forbid-only \"test/**/*.test.ts\"",
-    "vitest": "vitest",
+    "posttest": "npm run lint",
+    "prepack": "npm run build && oclif manifest && oclif readme",
+    "mocha": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "test": "vitest",
     "version": "oclif readme && git add README.md"
   },
   "engines": {
