@@ -3,7 +3,8 @@ import path from 'node:path'
 import { readJson } from 'fs-extra'
 import { expect, it, vi } from 'vitest'
 
-import { getPackList, getTargetPath } from '@/lib/misc'
+import { getTargetPath } from '@/lib/misc'
+import { getPackList } from '@/lib/packlist'
 
 vi.mock('fs-extra', () => ({
   readJson: vi.fn(),
@@ -28,5 +29,5 @@ it('should return a pack list', async () => {
   const packageRoot = path.resolve('.')
   const result = await getPackList(path.resolve('.'))
   expect(result).toBeInstanceOf(Array)
-  expect(result[0]).toMatch(packageRoot)
+  expect(result).includes('package.json')
 })
