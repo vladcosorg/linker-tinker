@@ -17,13 +17,7 @@ import {
   installPackage,
   isPackageInstalled,
 } from '@/lib/misc'
-import { createTaskFactory } from '@/lib/tasks'
-
-interface Context {
-  sourcePackagePath: string
-  targetPackagePath: string
-  syncPaths: string[] | string
-}
+import { createTaskFactory, Context } from '@/lib/tasks'
 
 export default class Sync extends Command {
   static override description = 'Start syncing the directory'
@@ -40,8 +34,8 @@ export default class Sync extends Command {
     const input = await this.parse(Sync)
     const inputArguments = input.args as Record<'from' | 'to', string>
     const inputFlags = input.flags
-    const tasks = createTaskFactory<Context>({
-      renderer: inputFlags.verbose ? 'simple' : 'default',
+    const tasks = createTaskFactory({
+      renderer: 'default',
     })
 
     tasks.ctx = {

@@ -1,5 +1,4 @@
-oclif-hello-world
-=================
+# oclif-hello-world
 
 oclif example Hello World CLI
 
@@ -10,11 +9,15 @@ oclif example Hello World CLI
 [![License](https://img.shields.io/npm/l/oclif-hello-world.svg)](https://github.com/oclif/hello-world/blob/main/package.json)
 
 <!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
+
 ```sh-session
 $ npm install -g link-and-tink
 $ linktink COMMAND
@@ -26,20 +29,24 @@ USAGE
   $ linktink COMMAND
 ...
 ```
+
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
-* [`linktink help [COMMAND]`](#linktink-help-command)
-* [`linktink plugins`](#linktink-plugins)
-* [`linktink plugins:install PLUGIN...`](#linktink-pluginsinstall-plugin)
-* [`linktink plugins:inspect PLUGIN...`](#linktink-pluginsinspect-plugin)
-* [`linktink plugins:install PLUGIN...`](#linktink-pluginsinstall-plugin-1)
-* [`linktink plugins:link PLUGIN`](#linktink-pluginslink-plugin)
-* [`linktink plugins:uninstall PLUGIN...`](#linktink-pluginsuninstall-plugin)
-* [`linktink plugins:uninstall PLUGIN...`](#linktink-pluginsuninstall-plugin-1)
-* [`linktink plugins:uninstall PLUGIN...`](#linktink-pluginsuninstall-plugin-2)
-* [`linktink plugins update`](#linktink-plugins-update)
-* [`linktink sync FROM TO`](#linktink-sync-from-to)
+
+- [`linktink help [COMMAND]`](#linktink-help-command)
+- [`linktink plugins`](#linktink-plugins)
+- [`linktink plugins:install PLUGIN...`](#linktink-pluginsinstall-plugin)
+- [`linktink plugins:inspect PLUGIN...`](#linktink-pluginsinspect-plugin)
+- [`linktink plugins:install PLUGIN...`](#linktink-pluginsinstall-plugin-1)
+- [`linktink plugins:link PLUGIN`](#linktink-pluginslink-plugin)
+- [`linktink plugins:uninstall PLUGIN...`](#linktink-pluginsuninstall-plugin)
+- [`linktink plugins:uninstall PLUGIN...`](#linktink-pluginsuninstall-plugin-1)
+- [`linktink plugins:uninstall PLUGIN...`](#linktink-pluginsuninstall-plugin-2)
+- [`linktink plugins update`](#linktink-plugins-update)
+- [`linktink sync FROM TO`](#linktink-sync-from-to)
 
 ## `linktink help [COMMAND]`
 
@@ -112,7 +119,7 @@ ALIASES
   $ linktink plugins add
 
 EXAMPLES
-  $ linktink plugins:install myplugin 
+  $ linktink plugins:install myplugin
 
   $ linktink plugins:install https://github.com/someuser/someplugin
 
@@ -172,7 +179,7 @@ ALIASES
   $ linktink plugins add
 
 EXAMPLES
-  $ linktink plugins:install myplugin 
+  $ linktink plugins:install myplugin
 
   $ linktink plugins:install https://github.com/someuser/someplugin
 
@@ -308,4 +315,5 @@ DESCRIPTION
 ```
 
 _See code: [dist/commands/sync.ts](https://github.com/chetzof/link-and-tink/blob/v1.0.0/dist/commands/sync.ts)_
+
 <!-- commandsstop -->

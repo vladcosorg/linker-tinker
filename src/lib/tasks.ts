@@ -1,19 +1,16 @@
-import {
-  ListrBaseClassOptions,
-  ListrContext,
-  ListrDefaultRendererValue,
-  ListrSimpleRendererValue,
-  Manager,
-} from 'listr2'
+import { ListrBaseClassOptions, Manager, ListrRendererValue } from 'listr2'
 
-export function createTaskFactory<T = ListrContext>(
-  override?: ListrBaseClassOptions<T> & {
-    renderer: ListrDefaultRendererValue | ListrSimpleRendererValue
-  },
-): Manager<T> {
-  return new Manager<T>({
+export interface Context {
+  sourcePackagePath: string
+  targetPackagePath: string
+  syncPaths: string[] | string
+}
+
+export function createTaskFactory<
+  O extends ListrBaseClassOptions<Context, ListrRendererValue>,
+>(override: O): Manager<O['ctx'], NonNullable<O['renderer']>> {
+  return new Manager({
     concurrent: false,
-    // renderer: 'simple',
     registerSignalListeners: false,
     rendererOptions: {
       collapse: false,

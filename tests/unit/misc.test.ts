@@ -26,7 +26,6 @@ it('should return a path to a package in node_modules', async () => {
 })
 
 it('should return a pack list', async () => {
-  const packageRoot = path.resolve('.')
   const result = await getPackList(path.resolve('.'))
   expect(result).toBeInstanceOf(Array)
   expect(result).includes('package.json')
