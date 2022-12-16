@@ -4,6 +4,7 @@ import { watch } from 'chokidar'
 import { Listr, ListrTask } from 'listr2'
 import notifier from 'node-notifier'
 
+import { installTheDependentPackageTask } from '@/commands/sync/subtasks/install-dependent-package-task'
 import { Context } from '@/commands/sync/tasks'
 import { deferred } from '@/lib/deferred'
 import { removeFileAndContainingDirectoryIfEmpty } from '@/lib/fs'
@@ -83,7 +84,7 @@ export function startWatcherTask(): ListrTask<Context> {
                   targetPath
                 ) {
                   newList.add(
-                    this.installTheDependentPackage(
+                    installTheDependentPackageTask(
                       'Detected changes in source package.json. Reinstalling the package to pick up possible (peer)dependency changes.',
                     ),
                   )
