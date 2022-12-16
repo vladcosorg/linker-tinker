@@ -1,4 +1,4 @@
-/tsconfig.json
+/tsconfig.prod.json
 /.node-version
 /.eslintrc.js
 .github

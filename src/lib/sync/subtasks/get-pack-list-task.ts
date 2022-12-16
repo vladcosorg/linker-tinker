@@ -1,7 +1,7 @@
 import { ListrTask } from 'listr2'
 
-import { Context } from '@/commands/sync/tasks'
 import { getPackList } from '@/lib/packlist'
+import { Context } from '@/lib/sync/tasks'
 
 export function getPackListTasker(): ListrTask<Context> {
   return {

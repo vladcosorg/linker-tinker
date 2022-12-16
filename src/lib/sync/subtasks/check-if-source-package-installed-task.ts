@@ -1,7 +1,7 @@
 import { ListrTask } from 'listr2'
 
-import { Context } from '@/commands/sync/tasks'
 import { getPackageName, isPackageInstalled } from '@/lib/misc'
+import { Context } from '@/lib/sync/tasks'
 
 export function checkIfSourcePackageInstalledTask(): ListrTask<Context> {
   return {

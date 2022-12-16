@@ -1,5 +1,6 @@
 import jetpack from 'fs-jetpack'
-import { FSJetpack } from 'fs-jetpack/types'
+
+import type { FSJetpack } from 'fs-jetpack/types'
 
 export function getTestTemporaryDirectory(): FSJetpack {
   return jetpack.tmpDir()

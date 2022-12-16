@@ -1,5 +1,6 @@
-import { ListrTask } from 'listr2'
 import { getPackageName } from '@/lib/misc'
+
+import type { ListrTask } from 'listr2'
 
 export function checkIfIsValidNodePackageTask(packagePath: string): ListrTask {
   return {

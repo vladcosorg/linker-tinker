@@ -13,5 +13,12 @@ module.exports = defineConfig({
         'import/no-unused-modules': 'off',
       },
     },
+    {
+      files: ['*.ts', '*.js'],
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        project: './tsconfig.dev.json',
+      },
+    },
   ],
 })

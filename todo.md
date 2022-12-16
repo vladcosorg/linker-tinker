@@ -3,3 +3,4 @@
 - Graceful shutdown
 - Support yarn, etc
 - Naive for initials launch and smart strategy for package.json update
+- Detect when npm intall is run on target package (and deletes the linked package)

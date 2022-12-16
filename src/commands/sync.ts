@@ -2,7 +2,7 @@ import path from 'node:path'
 
 import { Command, Flags } from '@oclif/core'
 
-import { runTasks } from '@/commands/sync/tasks'
+import { runTasks } from '@/lib/sync/tasks'
 
 export default class Sync extends Command {
   static override description = 'Link and sync a package as a dependency'

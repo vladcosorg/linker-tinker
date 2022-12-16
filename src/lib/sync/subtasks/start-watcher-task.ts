@@ -4,13 +4,13 @@ import { watch } from 'chokidar'
 import { Listr, ListrTask } from 'listr2'
 import notifier from 'node-notifier'
 
-import { installTheDependentPackageTask } from '@/commands/sync/subtasks/install-dependent-package-task'
-import { Context } from '@/commands/sync/tasks'
 import { deferred } from '@/lib/deferred'
 import { removeFileAndContainingDirectoryIfEmpty } from '@/lib/fs'
 import { copyFile, formatPathToRelative, getTargetPath } from '@/lib/misc'
 import { getPackList } from '@/lib/packlist'
 import { listenToQuitKey } from '@/lib/stdin'
+import { installTheDependentPackageTask } from '@/lib/sync/subtasks/install-dependent-package-task'
+import { Context } from '@/lib/sync/tasks'
 
 function createIntermediateTask(list: Listr<Context, any, any>): {
   resolve: (value: string) => void

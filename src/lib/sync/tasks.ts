@@ -5,13 +5,13 @@ import {
   Manager,
 } from 'listr2'
 
-import { checkIfIsValidNodePackageTask } from '@/commands/sync/subtasks/check-if-is-valid-node-package-task'
-import { checkIfSourcePackageInstalledTask } from '@/commands/sync/subtasks/check-if-source-package-installed-task'
-import { checkIfThePathExistsTask } from '@/commands/sync/subtasks/check-if-the-path-exists-task'
-import { getFallbackPackList } from '@/commands/sync/subtasks/get-fallback-packlist-task'
-import { getPackListTasker } from '@/commands/sync/subtasks/get-pack-list-task'
-import { installTheDependentPackageTask } from '@/commands/sync/subtasks/install-dependent-package-task'
-import { startWatcherTask } from '@/commands/sync/subtasks/start-watcher-task'
+import { checkIfIsValidNodePackageTask } from '@/lib/sync/subtasks/check-if-is-valid-node-package-task'
+import { checkIfSourcePackageInstalledTask } from '@/lib/sync/subtasks/check-if-source-package-installed-task'
+import { checkIfThePathExistsTask } from '@/lib/sync/subtasks/check-if-the-path-exists-task'
+import { getFallbackPackList } from '@/lib/sync/subtasks/get-fallback-packlist-task'
+import { getPackListTasker } from '@/lib/sync/subtasks/get-pack-list-task'
+import { installTheDependentPackageTask } from '@/lib/sync/subtasks/install-dependent-package-task'
+import { startWatcherTask } from '@/lib/sync/subtasks/start-watcher-task'
 
 export interface Context {
   sourcePackagePath: string
@@ -47,7 +47,7 @@ function getTasks(): Array<ListrTask<Context>> {
     {
       enabled: true,
       title: 'Dependent package installation in the the host package',
-      task: (context, task) =>
+      task: (_context, task) =>
         task.newListr(
           [
             checkIfSourcePackageInstalledTask(),

@@ -1,22 +1,8 @@
 {
-  //  "extends": "chetzof-lint-config/tsconfig/tsconfig.json",
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "esModuleInterop": true,
-    "baseUrl": "./",
-    "declaration": true,
-    "importHelpers": true,
-    "module": "commonjs",
     "outDir": "dist",
-    "rootDir": "src",
-    "strict": true,
-    "target": "es2019",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "rootDir": "src"
   },
-  "include": ["./src/**/*"],
-  "ts-node": {
-    "require": ["tsconfig-paths/register"],
-    "logError": true
-  }
+  "include": ["./src/**/*"]
 }
