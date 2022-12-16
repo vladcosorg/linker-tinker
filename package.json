@@ -51,6 +51,8 @@
     "eslint-config-oclif": "^4",
     "eslint-config-oclif-typescript": "^1.0.3",
     "eslint-define-config": "^1.12.0",
+    "husky": "^8.0.2",
+    "lint-staged": "^13.1.0",
     "mocha": "^10",
     "oclif": "^3",
     "semantic-release": "^19.0.5",
@@ -75,18 +77,20 @@
     ]
   },
   "scripts": {
-    "build": "shx rm -rf dist && tsc -b && tsc-alias",
+    "build": "shx rm -rf dist && tsc --project tsconfig.json && tsc-alias",
     "watch": "tsc -w",
     "lint": "npm run lint:tsc && npm run lint:eslint",
     "fix": "npm run lint:prettier && npm run lint:eslint-fix",
     "lint:eslint-fix": "eslint .  --fix",
     "lint:eslint": "eslint .",
+    "lint:eslinthusky": "eslint",
     "lint:tsc": "tsc --noEmit",
     "lint:prettier": "prettier --write .",
     "postpack": "shx rm -f oclif.manifest.json",
     "prepack": "npm run build && oclif manifest && oclif readme",
     "test": "vitest",
-    "version": "oclif readme && git add README.md"
+    "version": "oclif readme && git add README.md",
+    "prepare": "husky install"
   },
   "engines": {
     "node": ">=14.17.0"
