@@ -1,6 +1,6 @@
 import path from 'node:path'
 
-import { copy, readJson, remove } from 'fs-extra'
+import { copy, readJson } from 'fs-extra'
 import { z } from 'zod'
 
 import { execNpm } from '@/lib/child-process'
@@ -12,7 +12,9 @@ interface PackageJSON {
 }
 
 async function readPackageJson(packageDirectory: string): Promise<PackageJSON> {
-  return readJson(path.join(packageDirectory, 'package.json'))
+  return (await readJson(
+    path.join(packageDirectory, 'package.json'),
+  )) as Promise<PackageJSON>
 }
 
 export async function getPackageName(
@@ -33,10 +35,6 @@ export async function copyFile(
   toPath: string,
 ): Promise<void> {
   await copy(fromPath, toPath)
-}
-
-export async function removeFileOrDirectory(targetPath: string): Promise<void> {
-  await remove(targetPath)
 }
 
 export async function getTargetPath(
@@ -106,17 +104,6 @@ export async function installPackage(
     options: ['no-save'],
     cwd: packagePath,
   })
-}
-
-export async function getWatchedFiles(
-  sourcePackageRoot: string,
-): Promise<string[] | string> {
-  try {
-    return await getPackList(sourcePackageRoot)
-  } catch {
-    // console.log(getErrorMessage(error))
-    return sourcePackageRoot
-  }
 }
 
 export function formatPathToRelative(

@@ -77,15 +77,14 @@
   "scripts": {
     "build": "shx rm -rf dist && tsc -b && tsc-alias",
     "watch": "tsc -w",
-    "lint": "npm run lint:prettier && npm run lint:eslint",
+    "lint": "npm run lint:tsc && npm run lint:eslint",
+    "fix": "npm run lint:prettier && npm run lint:eslint-fix",
     "lint:eslint-fix": "eslint .  --fix",
     "lint:eslint": "eslint .",
     "lint:tsc": "tsc --noEmit",
     "lint:prettier": "prettier --write .",
     "postpack": "shx rm -f oclif.manifest.json",
-    "posttest": "npm run lint",
     "prepack": "npm run build && oclif manifest && oclif readme",
-    "mocha": "mocha --forbid-only \"test/**/*.test.ts\"",
     "test": "vitest",
     "version": "oclif readme && git add README.md"
   },

@@ -1,9 +1,6 @@
 // @ts-check
 const { defineConfig } = require('eslint-define-config')
 module.exports = defineConfig({
-  parserOptions: {
-    project: ['./tsconfig.test.json'],
-  },
   extends: [
     'oclif',
     'oclif-typescript',
