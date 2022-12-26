@@ -1,11 +1,16 @@
 name: Tests
 
+#on:
+#  push:
+#    branches: [main]
+#  pull_request:
+#    branches: [main]
 on:
-  push:
+  workflow_run:
+    workflows: ['A']
     branches: [main]
-  pull_request:
-    branches: [main]
-
+    types:
+      - completed
 jobs:
   build:
     runs-on: ubuntu-latest

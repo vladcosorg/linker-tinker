@@ -74,7 +74,7 @@
     ]
   },
   "scripts": {
-    "build": "rm -rf dist && tsc --project tsconfig.json && tsc-alias",
+    "build": "shx rm -rf dist && tsc && ls -la dist && tsc-alias",
     "watch": "tsc -w",
     "lint": "npm run lint:tsc && npm run lint:eslint",
     "fix": "npm run lint:prettier && npm run lint:eslint-fix",
