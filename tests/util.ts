@@ -9,7 +9,7 @@ interface Options {
 }
 export async function waitUntilTrue(
   expression: () => boolean,
-  { checkInterval = 500, bailTimeout = 2000 }: Options = {},
+  { checkInterval = 500, bailTimeout = 5000 }: Options = {},
 ): Promise<true> {
   return new Promise((resolve, reject) => {
     const tooLongInterval = setTimeout(() => {

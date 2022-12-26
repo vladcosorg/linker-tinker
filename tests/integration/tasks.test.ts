@@ -43,7 +43,7 @@ function addFileContent<T extends FSJetpack>(
   }) as T
 }
 
-it('should work', async () => {
+it('run full process', async () => {
   const secondaryDirectoryOriginal =
     testTemporaryDirectory.cwd('secondary-original')
 
