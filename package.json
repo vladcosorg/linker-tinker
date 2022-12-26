@@ -86,7 +86,8 @@
     "prepack": "npm run build && oclif manifest && oclif readme",
     "test": "vitest",
     "version": "oclif readme && git add README.md",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "semantic-release": "semantic-release"
   },
   "engines": {
     "node": ">=14.17.0"
