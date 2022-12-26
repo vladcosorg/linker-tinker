@@ -1,14 +1,14 @@
-import { ListrTask } from 'listr2'
-
 import { installPackage } from '@/lib/misc'
-import { Context } from '@/lib/sync/tasks'
+import type { Context } from '@/lib/sync/tasks'
+
+import type { ListrTask } from 'listr2'
 
 export function installTheDependentPackageTask(
   title = 'Installing the package',
 ): ListrTask<Context> {
   return {
     title,
-    task: async (context, task): Promise<void> => {
+    task: async (context): Promise<void> => {
       await installPackage(context.targetPackagePath, context.sourcePackagePath)
     },
   }

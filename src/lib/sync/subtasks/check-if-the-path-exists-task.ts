@@ -1,7 +1,8 @@
 import fs from 'fs-extra'
-import { ListrTask } from 'listr2'
 
-import { Context } from '@/lib/sync/tasks'
+import type { Context } from '@/lib/sync/tasks'
+
+import type { ListrTask } from 'listr2'
 
 export function checkIfThePathExistsTask(userPath: string): ListrTask<Context> {
   return {

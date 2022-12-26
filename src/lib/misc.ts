@@ -1,7 +1,7 @@
 import path from 'node:path'
 
-import { copy, readJson } from 'fs-extra'
-import { z } from 'zod'
+import { copy } from 'fs-extra'
+import { read } from 'fs-jetpack'
 
 import { execNpm } from '@/lib/child-process'
 
@@ -12,8 +12,9 @@ interface PackageJSON {
 }
 
 async function readPackageJson(packageDirectory: string): Promise<PackageJSON> {
-  return (await readJson(
+  return (await read(
     path.join(packageDirectory, 'package.json'),
+    'json',
   )) as Promise<PackageJSON>
 }
 
@@ -50,40 +51,6 @@ export async function getTargetPath(
   )
 }
 
-function getValidationRules(packageRoot: string) {
-  return z
-    .array(
-      z
-        .object({
-          files: z
-            .array(
-              z
-                .object({ path: z.string() })
-                .transform((value) => path.join(packageRoot, value.path)),
-            )
-            .nonempty(),
-        })
-        .transform((value) => value.files),
-    )
-    .nonempty()
-    .length(1)
-    .transform((value) => value[0])
-}
-
-export async function getPackList(
-  sourcePackageRoot: string,
-): Promise<z.infer<ReturnType<typeof getValidationRules>>> {
-  // console.log(await execNpm('', { options: ['version'] }))
-  const output = await execNpm('pack', {
-    options: ['dry-run', 'json', 'ignore-scripts', 'ignore-prepublish'],
-    cwd: sourcePackageRoot,
-  })
-  // console.log(output)
-  return getValidationRules(sourcePackageRoot).parse(
-    JSON.parse(output.toString()),
-  )
-}
-
 export async function isPackageInstalled(
   packagePath: string,
   dependencyName: string,
@@ -101,7 +68,7 @@ export async function installPackage(
   dependencyName: string,
 ): Promise<void> {
   await execNpm(`install  '${dependencyName}'`, {
-    options: ['no-save'],
+    options: ['no-save', 'install-links'],
     cwd: packagePath,
   })
 }

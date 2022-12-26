@@ -1,17 +1,18 @@
-import {
-  ListrBaseClassOptions,
-  ListrRendererValue,
-  ListrTask,
-  Manager,
-} from 'listr2'
+import { Manager } from 'listr2'
 
 import { checkIfIsValidNodePackageTask } from '@/lib/sync/subtasks/check-if-is-valid-node-package-task'
 import { checkIfSourcePackageInstalledTask } from '@/lib/sync/subtasks/check-if-source-package-installed-task'
 import { checkIfThePathExistsTask } from '@/lib/sync/subtasks/check-if-the-path-exists-task'
 import { getFallbackPackList } from '@/lib/sync/subtasks/get-fallback-packlist-task'
-import { getPackListTasker } from '@/lib/sync/subtasks/get-pack-list-task'
+import { getPackListTask } from '@/lib/sync/subtasks/get-pack-list-task'
 import { installTheDependentPackageTask } from '@/lib/sync/subtasks/install-dependent-package-task'
 import { startWatcherTask } from '@/lib/sync/subtasks/start-watcher-task'
+
+import type {
+  ListrBaseClassOptions,
+  ListrRendererValue,
+  ListrTask,
+} from 'listr2'
 
 export interface Context {
   sourcePackagePath: string
@@ -60,8 +61,8 @@ function getTasks(): Array<ListrTask<Context>> {
     },
     {
       title: 'Finding the files for sync',
-      task: (context, task) =>
-        task.newListr([getPackListTasker(), getFallbackPackList()], {
+      task: (_context, task) =>
+        task.newListr([getPackListTask(), getFallbackPackList()], {
           concurrent: false,
           exitOnError: false,
           rendererOptions: { collapseErrors: false },

@@ -8,16 +8,22 @@ module.exports = defineConfig({
   ],
   overrides: [
     {
-      files: 'src/commands/**/*.ts',
+      files: ['src/index.ts', 'src/commands/**/*.ts'],
       rules: {
+        'import/no-default-export': 'off',
         'import/no-unused-modules': 'off',
       },
     },
     {
       files: ['*.ts', '*.js'],
+      rules: {
+        'unused-imports/no-unused-imports':
+          process.env.NODE_ENV === 'production' ? 'error' : 'off',
+        'no-console': 'off',
+      },
       parser: '@typescript-eslint/parser',
       parserOptions: {
-        project: './tsconfig.dev.json',
+        project: './tsconfig.development.json',
       },
     },
   ],

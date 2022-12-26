@@ -1,7 +1,6 @@
 import path from 'node:path'
 
 import { watch } from 'chokidar'
-import { Listr, ListrTask } from 'listr2'
 import notifier from 'node-notifier'
 
 import { deferred } from '@/lib/deferred'
@@ -10,28 +9,30 @@ import { copyFile, formatPathToRelative, getTargetPath } from '@/lib/misc'
 import { getPackList } from '@/lib/packlist'
 import { listenToQuitKey } from '@/lib/stdin'
 import { installTheDependentPackageTask } from '@/lib/sync/subtasks/install-dependent-package-task'
-import { Context } from '@/lib/sync/tasks'
+import type { Context } from '@/lib/sync/tasks'
 
-function createIntermediateTask(list: Listr<Context, any, any>): {
+import type { ListrTask } from 'listr2'
+
+function createIntermediateTask(): {
   resolve: (value: string) => void
   reject: (value: string) => void
+  task: ListrTask<Context>
 } {
   const { resolve, reject, promise } = deferred<string>()
-  list.add([
-    {
+  return {
+    task: {
       title:
         'Waiting for changes (press q to exit and restore the original package contents)',
-      task: async (context, task) => {
-        const result = await promise
-        task.title = result
+      task: async (_context, task) => {
+        task.title = await promise
       },
       options: {
         exitOnError: false,
       },
     },
-  ])
-
-  return { resolve, reject }
+    resolve,
+    reject,
+  }
 }
 
 export function startWatcherTask(): ListrTask<Context> {
@@ -40,14 +41,16 @@ export function startWatcherTask(): ListrTask<Context> {
     task: (context, task) => {
       const newList = task.newListr([], { exitOnError: false })
 
-      let { resolve, reject } = createIntermediateTask(newList)
+      let intermediateTask = createIntermediateTask()
+      newList.add(intermediateTask.task)
 
       listenToQuitKey(() => {
-        resolve('Triggered graceful exit')
+        intermediateTask.resolve('Triggered graceful exit')
         newList.add([
           {
             title: 'Graceful',
             task: () => {
+              // eslint-disable-next-line no-process-exit,unicorn/no-process-exit
               process.exit(1)
             },
           },
@@ -58,9 +61,8 @@ export function startWatcherTask(): ListrTask<Context> {
         ignoreInitial: true,
         persistent: true,
         ignored: ['**/.git/**', '**/node_modules/**'],
-      }).on('all', (eventName, sourcePath, stats) => {
-        // console.log(eventName)
-        void getTargetPath(
+      }).on('all', (eventName, sourcePath) => {
+        getTargetPath(
           sourcePath,
           context.sourcePackagePath,
           context.targetPackagePath,
@@ -70,7 +72,11 @@ export function startWatcherTask(): ListrTask<Context> {
               context.syncPaths = await getPackList(context.sourcePackagePath)
             }
 
-            if (!context.syncPaths.includes(sourcePath)) {
+            if (
+              !context.syncPaths.includes(
+                path.relative(context.sourcePackagePath, sourcePath),
+              )
+            ) {
               return
             }
 
@@ -90,7 +96,7 @@ export function startWatcherTask(): ListrTask<Context> {
                   )
                 }
 
-                resolve(
+                intermediateTask.resolve(
                   `Copied from ${formatPathToRelative(
                     context.sourcePackagePath,
                     sourcePath,
@@ -99,14 +105,16 @@ export function startWatcherTask(): ListrTask<Context> {
                     targetPath,
                   )}`,
                 )
-                ;({ resolve, reject } = createIntermediateTask(newList))
+                intermediateTask = createIntermediateTask()
+                newList.add(intermediateTask.task)
                 break
               }
 
               case 'unlink': {
                 await removeFileAndContainingDirectoryIfEmpty(targetPath)
-                resolve(`Removed ${targetPath}`)
-                ;({ resolve, reject } = createIntermediateTask(newList))
+                intermediateTask.resolve(`Removed ${targetPath}`)
+                intermediateTask = createIntermediateTask()
+                newList.add(intermediateTask.task)
                 break
               }
 
@@ -120,8 +128,9 @@ export function startWatcherTask(): ListrTask<Context> {
               title: 'linkandtink',
               message: `An error occured. Please check console for more info.`,
             })
-            reject(error)
-            ;({ resolve, reject } = createIntermediateTask(newList))
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            intermediateTask.reject(error)
+            intermediateTask = createIntermediateTask()
           })
       })
 
