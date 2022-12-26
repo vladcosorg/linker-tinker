@@ -1,13 +1,13 @@
 import path from 'node:path'
 
-import { readJson } from 'fs-extra'
+import { read } from 'fs-jetpack'
 import { expect, it, vi } from 'vitest'
 
 import { getTargetPath } from '@/lib/misc'
 import { getPackList } from '@/lib/packlist'
 
-vi.mock('fs-extra', () => ({
-  readJson: vi.fn(),
+vi.mock('fs-jetpack', () => ({
+  read: vi.fn(),
 }))
 
 it('should return a path to a package in node_modules', async () => {
@@ -19,7 +19,7 @@ it('should return a path to a package in node_modules', async () => {
   const targetRoot = '/path/to/target-root'
   const targetPath = `/path/to/target-root/node_modules/${sourcePackageName}/src/file.ts`
 
-  vi.mocked(readJson).mockResolvedValue({ name: sourcePackageName })
+  vi.mocked(read).mockResolvedValue({ name: sourcePackageName })
   await expect(getTargetPath(sourcePath, sourceRoot, targetRoot)).resolves.toBe(
     targetPath,
   )

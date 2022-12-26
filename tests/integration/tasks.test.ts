@@ -52,7 +52,7 @@ it('should work', async () => {
 
   const secondaryDirectorySynced = testTemporaryDirectory.cwd('secondary')
 
-  addPackageContent(secondaryDirectorySynced, packageOriginalContent)
+  addPackageContent(secondaryDirectorySynced, packageSyncContent)
   addFileContent(secondaryDirectorySynced, '1')
 
   const primaryDirectory = testTemporaryDirectory.cwd('primary')
@@ -78,6 +78,10 @@ it('should work', async () => {
   // eslint-disable-next-line no-void
   void Sync.run([secondaryDirectorySynced.path(), primaryDirectory.path()])
 
+  await waitUntiltoHaveBeenCalledWith(spy, [
+    '[STARTED] Waiting for changes (press q to exit and restore the original package contents)',
+  ])
+
   await waitUntilTrue(() =>
     isEqual(
       read(
@@ -87,10 +91,6 @@ it('should work', async () => {
       packageSyncContent,
     ),
   )
-
-  await waitUntiltoHaveBeenCalledWith(spy, [
-    '[STARTED] Waiting for changes (press q to exit and restore the original package contents)',
-  ])
 
   secondaryDirectorySynced.file('content.js', { content: '2' })
 
