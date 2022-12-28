@@ -13,7 +13,7 @@ interface PackageJSON {
 
 async function readPackageJson(packageDirectory: string): Promise<PackageJSON> {
   const cwd = jetpack.cwd(packageDirectory)
-  const contents = (await cwd.readAsync('packagedddd.json', 'json')) as
+  const contents = (await cwd.readAsync('package.json', 'json')) as
     | PackageJSON
     | undefined
 
