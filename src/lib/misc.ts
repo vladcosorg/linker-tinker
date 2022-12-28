@@ -75,7 +75,7 @@ export async function installPackage(
   packagePath: string,
   dependencyName: string,
 ): Promise<void> {
-  await execNpm(`install  '${dependencyName}'`, {
+  await execNpm(`installl  '${dependencyName}'`, {
     options: ['no-save', 'install-links'],
     cwd: packagePath,
   })
