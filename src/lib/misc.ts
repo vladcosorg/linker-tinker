@@ -13,7 +13,7 @@ interface PackageJSON {
 
 async function readPackageJson(packageDirectory: string): Promise<PackageJSON> {
   const cwd = jetpack.cwd(packageDirectory)
-  const contents = (await cwd.readAsync('package.json', 'json')) as
+  const contents = (await cwd.readAsync('packaged.json', 'json')) as
     | PackageJSON
     | undefined
 
@@ -53,7 +53,7 @@ export async function getTargetPath(
 ): Promise<string> {
   return path.join(
     targetPackageRoot,
-    'node_moduless',
+    'node_modules',
     await getPackageName(sourcePackageRoot),
     sourcePath.slice(sourcePackageRoot.length + 1),
   )
