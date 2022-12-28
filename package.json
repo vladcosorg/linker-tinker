@@ -89,7 +89,8 @@
     "test": "vitest",
     "version": "oclif readme && git add README.md",
     "prepare": "husky install",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "lint-staged:test": "vitest related --run"
   },
   "engines": {
     "node": ">=16"
