@@ -53,7 +53,7 @@ export async function getTargetPath(
 ): Promise<string> {
   return path.join(
     targetPackageRoot,
-    'node_modules',
+    'node_moduless',
     await getPackageName(sourcePackageRoot),
     sourcePath.slice(sourcePackageRoot.length + 1),
   )
@@ -75,7 +75,7 @@ export async function installPackage(
   packagePath: string,
   dependencyName: string,
 ): Promise<void> {
-  await execNpm(`installl  '${dependencyName}'`, {
+  await execNpm(`install  '${dependencyName}'`, {
     options: ['no-save', 'install-links'],
     cwd: packagePath,
   })
