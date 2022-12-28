@@ -40,24 +40,10 @@ export function startWatcherTask(): ListrTask<Context> {
     title: 'Starting watching the files',
     task: (context, task) => {
       const newList = task.newListr([], { exitOnError: false })
-
       let intermediateTask = createIntermediateTask()
       newList.add(intermediateTask.task)
 
-      listenToQuitKey(() => {
-        intermediateTask.resolve('Triggered graceful exit')
-        newList.add([
-          {
-            title: 'Graceful',
-            task: () => {
-              // eslint-disable-next-line no-process-exit,unicorn/no-process-exit
-              process.exit(1)
-            },
-          },
-        ])
-      })
-
-      watch(context.sourcePackagePath, {
+      const watcher = watch(context.sourcePackagePath, {
         ignoreInitial: true,
         persistent: true,
         ignored: ['**/.git/**', '**/node_modules/**'],
@@ -132,6 +118,17 @@ export function startWatcherTask(): ListrTask<Context> {
             intermediateTask.reject(error)
             intermediateTask = createIntermediateTask()
           })
+      })
+
+      listenToQuitKey(() => {
+        newList.add({
+          title: 'Close watcher',
+          task: async (_context) => {
+            await watcher.close()
+          },
+        })
+
+        intermediateTask.resolve('Quitting')
       })
 
       return newList

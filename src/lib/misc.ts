@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import { copy } from 'fs-extra'
-import { read } from 'fs-jetpack'
+import jetpack from 'fs-jetpack'
 
 import { execNpm } from '@/lib/child-process'
 
@@ -12,10 +12,18 @@ interface PackageJSON {
 }
 
 async function readPackageJson(packageDirectory: string): Promise<PackageJSON> {
-  return (await read(
-    path.join(packageDirectory, 'package.json'),
-    'json',
-  )) as Promise<PackageJSON>
+  const cwd = jetpack.cwd(packageDirectory)
+  const contents = (await cwd.readAsync('package.json', 'json')) as
+    | PackageJSON
+    | undefined
+
+  if (!contents) {
+    throw new Error(
+      `Could not find a package.json file in the directory '${packageDirectory}'`,
+    )
+  }
+
+  return contents
 }
 
 export async function getPackageName(

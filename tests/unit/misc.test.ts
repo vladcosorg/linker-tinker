@@ -1,32 +1,62 @@
 import path from 'node:path'
 
-import { read } from 'fs-jetpack'
-import { expect, it, vi } from 'vitest'
+import { expect, it, describe } from 'vitest'
 
-import { getTargetPath } from '@/lib/misc'
+import { getTargetPath, getPackageName } from '@/lib/misc'
 import { getPackList } from '@/lib/packlist'
 
-vi.mock('fs-jetpack', () => ({
-  read: vi.fn(),
-}))
+import { getFsHelpers } from './helpers'
+
+const { createPackage, temporaryCwd } = getFsHelpers()
 
 it('should return a path to a package in node_modules', async () => {
-  const sourcePackageName = 'source-package'
+  const { cwd, packageName } = createPackage()
+  const relativeDepencencyFilePath = 'dist/file.ts'
+  const dependencyFilePath = cwd.path(relativeDepencencyFilePath)
 
-  const sourcePath = '/path/to/source-root/src/file.ts'
-  const sourceRoot = '/path/to/source-root'
-
-  const targetRoot = '/path/to/target-root'
-  const targetPath = `/path/to/target-root/node_modules/${sourcePackageName}/src/file.ts`
-
-  vi.mocked(read).mockResolvedValue({ name: sourcePackageName })
-  await expect(getTargetPath(sourcePath, sourceRoot, targetRoot)).resolves.toBe(
-    targetPath,
+  const primaryRoot = temporaryCwd.cwd('primary')
+  const actualResult = await getTargetPath(
+    dependencyFilePath,
+    cwd.path(),
+    primaryRoot.path(),
   )
+  const expectedResult = primaryRoot.path(
+    'node_modules',
+    packageName,
+    relativeDepencencyFilePath,
+  )
+
+  expect(actualResult).toBe(expectedResult)
 })
 
 it('should return a pack list', async () => {
   const result = await getPackList(path.resolve('.'))
   expect(result).toBeInstanceOf(Array)
   expect(result).includes('package.json')
+})
+
+describe('getPackageName', () => {
+  it('should return a name if the name is set in package.json', async () => {
+    const { cwd, packageName } = createPackage()
+
+    await expect(getPackageName(cwd.path())).resolves.toBe(packageName)
+  })
+
+  it('should throw if the name is not set in package.json', async () => {
+    const { cwd } = createPackage({
+      files: {
+        'package.json': {},
+      },
+    })
+
+    await expect(getPackageName(cwd.path())).rejects.toThrow(
+      'Could not find a package name',
+    )
+  })
+
+  it('should throw if there is no package.json', async () => {
+    await expect(getPackageName(temporaryCwd.path())).rejects.toThrowError(
+      'Could not find a package.json',
+    )
+  })
 })

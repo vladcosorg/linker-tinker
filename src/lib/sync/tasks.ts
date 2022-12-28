@@ -5,6 +5,7 @@ import { checkIfSourcePackageInstalledTask } from '@/lib/sync/subtasks/check-if-
 import { checkIfThePathExistsTask } from '@/lib/sync/subtasks/check-if-the-path-exists-task'
 import { getFallbackPackList } from '@/lib/sync/subtasks/get-fallback-packlist-task'
 import { getPackListTask } from '@/lib/sync/subtasks/get-pack-list-task'
+import { gracefulExitTask } from '@/lib/sync/subtasks/graceful-exit-task'
 import { installTheDependentPackageTask } from '@/lib/sync/subtasks/install-dependent-package-task'
 import { startWatcherTask } from '@/lib/sync/subtasks/start-watcher-task'
 
@@ -69,6 +70,7 @@ function getTasks(): Array<ListrTask<Context>> {
         }),
     },
     startWatcherTask(),
+    gracefulExitTask(),
   ]
 }
 
@@ -77,7 +79,7 @@ export async function runTasks<
 >(override: O): Promise<Manager<O['ctx'], NonNullable<O['renderer']>>> {
   const manager = new Manager({
     concurrent: false,
-    registerSignalListeners: false,
+    // registerSignalListeners: false,
     rendererOptions: {
       collapse: false,
       collapseSkips: false,

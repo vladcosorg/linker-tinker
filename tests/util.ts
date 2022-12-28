@@ -1,7 +1,9 @@
 import { clearTimeout, clearInterval } from 'node:timers'
 
 import isEqual from 'lodash/isEqual'
-import { expect, SpyInstance } from 'vitest'
+import { expect } from 'vitest'
+
+import type { SpyInstance } from 'vitest'
 
 interface Options {
   checkInterval?: number
@@ -40,7 +42,7 @@ export async function waitUntiltoHaveBeenCalledWith(
       options,
     )
   } catch {
-    console.log(spy)
+    expect(spy).toHaveBeenCalledWith(...expectedCallArguments)
   } finally {
     expect(spy).toHaveBeenCalledWith(...expectedCallArguments)
   }

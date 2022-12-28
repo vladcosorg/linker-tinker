@@ -27,5 +27,7 @@ export default class Sync extends Command {
         syncPaths: path.resolve(inputArguments.from),
       },
     })
+    // eslint-disable-next-line no-process-exit,unicorn/no-process-exit
+    process.exit(0)
   }
 }

@@ -3,7 +3,6 @@
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
 
-// eslint-disable-next-line import/no-unused-modules
 export default defineConfig({
   plugins: [
     tsconfigPaths({
@@ -14,6 +13,7 @@ export default defineConfig({
   test: {
     deps: {
       interopDefault: true,
+      inline: ['vitest-mock-process'],
     },
     clearMocks: true,
     globals: true,

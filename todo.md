@@ -4,3 +4,7 @@
 - Support yarn, etc
 - Naive for initials launch and smart strategy for package.json update
 - Detect when npm intall is run on target package (and deletes the linked package)
+- Remember previous runs
+- Automatically trigger watcher on dependent package
+- Add debug flag
+- Skip specifying destination if current cwd is a package

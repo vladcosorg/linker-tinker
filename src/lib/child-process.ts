@@ -1,7 +1,4 @@
-import * as child_process from 'node:child_process'
-import * as util from 'node:util'
-
-const execAsync = util.promisify(child_process.exec)
+import { exec } from 'promisify-child-process'
 
 export async function execNpm(
   command: string,
@@ -20,6 +17,7 @@ export async function execNpm(
     .join(' ')
   const compiledCommand = `npm ${compiledOptions}  ${command} `
   // console.log(compiledCommand)
-  const output = await execAsync(compiledCommand, { cwd })
+  const output = await exec(compiledCommand, { cwd })
+  // console.log(output)
   return output.stdout
 }

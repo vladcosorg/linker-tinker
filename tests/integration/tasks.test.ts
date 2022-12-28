@@ -1,100 +1,71 @@
 import { read } from 'fs-jetpack'
-import { isEqual } from 'lodash'
-import { it, vi, afterEach } from 'vitest'
+import { it, vi, expect } from 'vitest'
+import { mockProcessExit } from 'vitest-mock-process'
 
-const spy = vi.spyOn(console, 'log')
 import Sync from '../../src/commands/sync'
 import { execNpm } from '../../src/lib/child-process'
-import { getTestTemporaryDirectory } from '../unit/helpers'
-import { waitUntiltoHaveBeenCalledWith, waitUntilTrue } from '../util'
+import { getFsHelpers } from '../unit/helpers'
+import { waitUntiltoHaveBeenCalledWith } from '../util'
 
-import type { FSJetpack } from 'fs-jetpack/types'
-
-const testTemporaryDirectory = getTestTemporaryDirectory()
-afterEach(() => {
-  testTemporaryDirectory.dir(testTemporaryDirectory.path(), { empty: true })
-})
-
-const packageOriginalContent = {
-  name: 'secondary',
-  version: '1.0.0',
-}
-
-const packageSyncContent = {
-  name: 'secondary',
-  version: '1.1.0',
-}
-
-function addPackageContent<T extends FSJetpack>(
-  path: T,
-  content: object | string,
-): T {
-  return path.file('package.json', {
-    content,
-  }) as T
-}
-
-function addFileContent<T extends FSJetpack>(
-  path: T,
-  content: object | string,
-): T {
-  return path.file('content.js', {
-    content,
-  }) as T
-}
-
+const spy = vi.spyOn(console, 'log')
+const { createPackage } = getFsHelpers()
+const mockExit = mockProcessExit()
 it('run full process', async () => {
-  const secondaryDirectoryOriginal =
-    testTemporaryDirectory.cwd('secondary-original')
-
-  addPackageContent(secondaryDirectoryOriginal, packageOriginalContent)
-  addFileContent(secondaryDirectoryOriginal, '0')
-
-  const secondaryDirectorySynced = testTemporaryDirectory.cwd('secondary')
-
-  addPackageContent(secondaryDirectorySynced, packageSyncContent)
-  addFileContent(secondaryDirectorySynced, '1')
-
-  const primaryDirectory = testTemporaryDirectory.cwd('primary')
-
-  addPackageContent(primaryDirectory, {
-    name: 'primary',
-    version: '1.0.0',
-    dependencies: {
-      secondary: secondaryDirectoryOriginal.path(),
+  const contentFilePath = 'node_modules/secondary/content.js'
+  const secondaryDirectoryOriginal = createPackage({
+    directoryName: 'secondary-original',
+    packageName: 'secondary',
+    files: {
+      'content.js': '0',
     },
   })
 
-  await execNpm('install', { cwd: primaryDirectory.path() })
-  await waitUntilTrue(() =>
-    isEqual(
-      read(
-        primaryDirectory.path('node_modules/secondary/package.json'),
-        'json',
-      ),
-      packageOriginalContent,
-    ),
-  )
+  const secondaryDirectorySynced = createPackage({
+    packageName: 'secondary',
+    files: {
+      'content.js': '1',
+    },
+  })
+
+  const masterDirectory = createPackage({
+    files: {
+      'package.json': {
+        name: 'master',
+        dependencies: {
+          secondary: secondaryDirectoryOriginal.cwd.path(),
+        },
+      },
+    },
+  })
+
+  await execNpm('install', { cwd: masterDirectory.cwd.path() })
+
+  expect(read(masterDirectory.cwd.path(contentFilePath))).toBe('0')
+
   // eslint-disable-next-line no-void
-  void Sync.run([secondaryDirectorySynced.path(), primaryDirectory.path()])
+  void Sync.run([
+    secondaryDirectorySynced.cwd.path(),
+    masterDirectory.cwd.path(),
+  ])
 
   await waitUntiltoHaveBeenCalledWith(spy, [
     '[STARTED] Waiting for changes (press q to exit and restore the original package contents)',
   ])
 
-  await waitUntilTrue(() =>
-    isEqual(
-      read(
-        primaryDirectory.path('node_modules/secondary/package.json'),
-        'json',
-      ),
-      packageSyncContent,
-    ),
-  )
+  expect(read(masterDirectory.cwd.path(contentFilePath))).toBe('1')
 
-  secondaryDirectorySynced.file('content.js', { content: '2' })
+  secondaryDirectorySynced.cwd.file('content.js', { content: '2' })
 
   await waitUntiltoHaveBeenCalledWith(spy, [
-    '[SUCCESS] Copied from ./secondary/content.js to ./primary/node_modules/secondary/content.js',
+    '[SUCCESS] Copied from ./secondary/content.js to ./master/node_modules/secondary/content.js',
   ])
+
+  expect(read(masterDirectory.cwd.path(contentFilePath))).toBe('2')
+
+  process.stdin.emit('keypress', undefined, { name: 'ę' })
+  await waitUntiltoHaveBeenCalledWith(spy, [
+    '[SUCCESS] Reverting to the previous package version',
+  ])
+  expect(read(masterDirectory.cwd.path(contentFilePath))).toBe('0')
+  expect(mockExit).toHaveBeenCalledWith(0)
 }, 10_000)

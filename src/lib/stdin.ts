@@ -7,7 +7,7 @@ export function listenToQuitKey(callback: () => void): void {
       return
     }
 
-    if (key.name === 'q') {
+    if (key.name === 'q' || key.name === 'ę') {
       process.stdin.removeListener('keypress', handler)
       callback()
     }
