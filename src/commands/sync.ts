@@ -13,6 +13,7 @@ export default class Sync extends Command {
 
   static override flags = {
     verbose: Flags.boolean({ char: 'v' }),
+    debug: Flags.boolean({ char: 'd' }),
   }
 
   async run(): Promise<void> {
