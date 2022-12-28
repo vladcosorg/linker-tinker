@@ -79,7 +79,6 @@ export async function runTasks<
 >(override: O): Promise<Manager<O['ctx'], NonNullable<O['renderer']>>> {
   const manager = new Manager({
     concurrent: false,
-    // registerSignalListeners: false,
     rendererOptions: {
       collapse: false,
       collapseSkips: false,
