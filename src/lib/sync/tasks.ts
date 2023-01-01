@@ -24,24 +24,31 @@ export interface Context {
 function getTasks(): Array<ListrTask<Context>> {
   return [
     {
-      title: 'Source package verification',
-      task: (context, task) => {
+      title: 'Dependent package',
+      task: (context, task) =>
         task.newListr<Context>(
-          [
+          (parent) => [
             checkIfThePathExistsTask(context.sourcePackagePath),
-            checkIfIsValidNodePackageTask(context.sourcePackagePath),
+            checkIfIsValidNodePackageTask(
+              context.sourcePackagePath,
+              parent,
+              false,
+            ),
           ],
           { concurrent: false },
-        )
-      },
+        ),
     },
     {
-      title: 'Target package verification',
+      title: 'Root package',
       task: (context, task) =>
         task.newListr(
-          [
+          (parent) => [
             checkIfThePathExistsTask(context.targetPackagePath),
-            checkIfIsValidNodePackageTask(context.targetPackagePath),
+            checkIfIsValidNodePackageTask(
+              context.targetPackagePath,
+              parent,
+              true,
+            ),
           ],
           { concurrent: false },
         ),

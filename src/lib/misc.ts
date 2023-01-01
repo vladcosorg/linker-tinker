@@ -11,7 +11,7 @@ interface PackageJSON {
   devDependencies?: Record<string, string>
 }
 
-async function readPackageJson(packageDirectory: string): Promise<PackageJSON> {
+async function getPackageJson(packageDirectory: string): Promise<PackageJSON> {
   const cwd = jetpack.cwd(packageDirectory)
   const contents = (await cwd.readAsync('package.json', 'json')) as
     | PackageJSON
@@ -29,7 +29,8 @@ async function readPackageJson(packageDirectory: string): Promise<PackageJSON> {
 export async function getPackageName(
   packageDirectory: string,
 ): Promise<string> {
-  const packageJson = await readPackageJson(packageDirectory)
+  const packageJson = await getPackageJson(packageDirectory)
+
   if (!packageJson.name) {
     throw new Error(
       `Could not find a package name in the package.json in the directory '${packageDirectory}'`,
@@ -37,6 +38,31 @@ export async function getPackageName(
   }
 
   return packageJson.name
+}
+
+export async function getPackageNiceName(
+  packageDirectory: string,
+): Promise<string> {
+  let name
+  try {
+    name = await getPackageName(packageDirectory)
+  } catch {
+    name = path.basename(packageDirectory)
+  }
+
+  return name
+}
+
+export async function validateDependentPackage(
+  packageDirectory: string,
+): Promise<void> {
+  await getPackageName(packageDirectory)
+}
+
+export async function validateRootPackage(
+  packageDirectory: string,
+): Promise<void> {
+  await getPackageJson(packageDirectory)
 }
 
 export async function copyFile(
@@ -63,7 +89,7 @@ export async function isPackageInstalled(
   packagePath: string,
   dependencyName: string,
 ): Promise<boolean> {
-  const packageJson = await readPackageJson(packagePath)
+  const packageJson = await getPackageJson(packagePath)
 
   return Boolean(
     packageJson.devDependencies?.[dependencyName] ??

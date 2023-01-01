@@ -2,7 +2,7 @@ import path from 'node:path'
 
 import { expect, it, describe } from 'vitest'
 
-import { getTargetPath, getPackageName } from '@/lib/misc'
+import { getTargetPath, getPackageName, getPackageNiceName } from '@/lib/misc'
 import { getPackList } from '@/lib/packlist'
 
 import { getFsHelpers } from './helpers'
@@ -58,5 +58,24 @@ describe('getPackageName', () => {
     await expect(getPackageName(temporaryCwd.path())).rejects.toThrowError(
       'Could not find a package.json',
     )
+  })
+})
+
+describe('getPackageNiceName', () => {
+  it('should return a nice name from package.json', async () => {
+    const { cwd, packageName } = createPackage()
+
+    await expect(getPackageNiceName(cwd.path())).resolves.toBe(packageName)
+  })
+  it('should return the directory name if the name is missing in package.json', async () => {
+    const directoryName = 'bar'
+    const { cwd } = createPackage({
+      directoryName,
+      files: {
+        'package.json': {},
+      },
+    })
+
+    await expect(getPackageNiceName(cwd.path())).resolves.toBe(directoryName)
   })
 })

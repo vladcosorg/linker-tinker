@@ -8,7 +8,7 @@ export function getPackListTask(): ListrTask<Context> {
     title: "Extracting the files from the 'npm pack' command",
     task: async (context, task) => {
       context.syncPaths = await getPackList(context.sourcePackagePath)
-      console.log(context.syncPaths)
+      // console.log(context.syncPaths)
       task.output = `Found ${context.syncPaths.length} files for sync`
     },
     options: {
