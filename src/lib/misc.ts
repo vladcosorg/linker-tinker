@@ -3,8 +3,6 @@ import path from 'node:path'
 import { copy } from 'fs-extra'
 import jetpack from 'fs-jetpack'
 
-import { execNpm } from '@/lib/child-process'
-
 interface PackageJSON {
   name?: string
   dependencies?: Record<string, string>
@@ -95,16 +93,6 @@ export async function isPackageInstalled(
     packageJson.devDependencies?.[dependencyName] ??
       packageJson.dependencies?.[dependencyName],
   )
-}
-
-export async function installPackage(
-  packagePath: string,
-  dependencyName: string,
-): Promise<void> {
-  await execNpm(`install  '${dependencyName}'`, {
-    options: ['no-save', 'install-links'],
-    cwd: packagePath,
-  })
 }
 
 export function formatPathToRelative(

@@ -1,4 +1,4 @@
-import { execNpm } from '@/lib/child-process'
+import { runNpmReinstall } from '@/lib/run'
 import type { Context } from '@/lib/sync/tasks'
 
 import type { ListrTask } from 'listr2'
@@ -11,9 +11,9 @@ export function gracefulExitTask(): ListrTask<Context> {
         {
           title: 'Reverting to the previous package version',
           task: async (_context) => {
-            await execNpm('install', {
-              cwd: context.targetPackagePath,
-            })
+            const process = runNpmReinstall(context.targetPackagePath)
+            process.all?.pipe(task.stdout())
+            await process
           },
         },
       ])

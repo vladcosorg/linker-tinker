@@ -3,7 +3,7 @@ import { it, vi, expect } from 'vitest'
 import { mockProcessExit } from 'vitest-mock-process'
 
 import Sync from '../../src/commands/sync'
-import { execNpm } from '../../src/lib/child-process'
+import { runNpmReinstall } from '../../src/lib/run'
 import { getFsHelpers } from '../unit/helpers'
 import { waitUntiltoHaveBeenCalledWith } from '../util'
 
@@ -38,11 +38,10 @@ it('run full process', async () => {
     },
   })
 
-  await execNpm('install', { cwd: masterDirectory.cwd.path() })
+  await runNpmReinstall(masterDirectory.cwd.path())
 
   expect(read(masterDirectory.cwd.path(contentFilePath))).toBe('0')
 
-  // eslint-disable-next-line no-void
   void Sync.run([
     secondaryDirectorySynced.cwd.path(),
     masterDirectory.cwd.path(),

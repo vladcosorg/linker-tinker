@@ -1,23 +1,22 @@
-import { exec } from 'promisify-child-process'
+import process from 'node:process'
 
-import type { ChildProcessPromise } from 'promisify-child-process'
+import pidtree from 'pidtree'
 
-export async function execNpm(
-  command: string,
-  {
-    options = [],
-    cwd,
-  }: {
-    options?: Array<string | [string, string]>
-    cwd?: string
-  },
-): Promise<ChildProcessPromise> {
-  const compiledOptions = options
-    .map((item) =>
-      Array.isArray(item) ? `--${item[0]} ${item[1]}` : `--${item}`,
-    )
-    .join(' ')
-  const compiledCommand = `npm ${compiledOptions}  ${command} `
-  // console.log(compiledCommand)
-  return exec(compiledCommand, { cwd })
+export async function terminate(
+  parentPid: number,
+  debug = false,
+): Promise<void> {
+  const pids = await pidtree(parentPid)
+
+  if (debug) {
+    console.warn('pidtree', pids)
+  }
+
+  for (const pid of pids) {
+    if (debug) {
+      console.warn(`Killing ${pid}`)
+    }
+
+    process.kill(pid)
+  }
 }

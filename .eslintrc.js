@@ -20,6 +20,8 @@ module.exports = defineConfig({
         'unused-imports/no-unused-imports':
           process.env.NODE_ENV === 'production' ? 'error' : 'off',
         'no-console': 'off',
+        'no-process-exit': 'off',
+        'unicorn/no-process-exit': 'off',
       },
       parser: '@typescript-eslint/parser',
       parserOptions: {

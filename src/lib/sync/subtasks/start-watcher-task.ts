@@ -1,30 +1,35 @@
 import path from 'node:path'
 
+import chalk from 'chalk'
 import { watch } from 'chokidar'
 import notifier from 'node-notifier'
 
 import { deferred } from '@/lib/deferred'
+import { toErrorWithMessage } from '@/lib/error'
+import { eventBus } from '@/lib/event-emitter'
 import { removeFileAndContainingDirectoryIfEmpty } from '@/lib/fs'
 import { copyFile, formatPathToRelative, getTargetPath } from '@/lib/misc'
 import { getPackList } from '@/lib/packlist'
-import { listenToQuitKey } from '@/lib/stdin'
 import { installTheDependentPackageTask } from '@/lib/sync/subtasks/install-dependent-package-task'
 import type { Context } from '@/lib/sync/tasks'
 
 import type { ListrTask } from 'listr2'
 
 function createIntermediateTask(): {
-  resolve: (value: string) => void
-  reject: (value: string) => void
+  resolve: (value?: string) => void
+  reject: ReturnType<typeof deferred>['reject']
   task: ListrTask<Context>
 } {
-  const { resolve, reject, promise } = deferred<string>()
+  const { resolve, reject, promise } = deferred<string | undefined>()
   return {
     task: {
       title:
         'Waiting for changes (press q to exit and restore the original package contents)',
       task: async (_context, task) => {
-        task.title = await promise
+        const promiseResult = await promise
+        if (promiseResult) {
+          task.title = promiseResult
+        }
       },
       options: {
         exitOnError: false,
@@ -37,6 +42,9 @@ function createIntermediateTask(): {
 
 export function startWatcherTask(): ListrTask<Context> {
   return {
+    options: {
+      bottomBar: 5,
+    },
     title: 'Starting watching the files',
     task: (context, task) => {
       const newList = task.newListr([], { exitOnError: false })
@@ -73,34 +81,30 @@ export function startWatcherTask(): ListrTask<Context> {
 
                 if (
                   path.join(context.sourcePackagePath, 'package.json') ===
-                  targetPath
+                  sourcePath
                 ) {
                   newList.add(
                     installTheDependentPackageTask(
                       'Detected changes in source package.json. Reinstalling the package to pick up possible (peer)dependency changes.',
                     ),
                   )
+                  intermediateTask.resolve()
+                  intermediateTask = createIntermediateTask()
+                  newList.add(intermediateTask.task)
                 }
 
-                intermediateTask.resolve(
-                  `Copied from ${formatPathToRelative(
-                    context.sourcePackagePath,
-                    sourcePath,
-                  )} to ${formatPathToRelative(
-                    context.targetPackagePath,
-                    targetPath,
-                  )}`,
-                )
-                intermediateTask = createIntermediateTask()
-                newList.add(intermediateTask.task)
+                task.output = `Copied from ${chalk.blue(
+                  formatPathToRelative(context.sourcePackagePath, sourcePath),
+                )} to ${chalk.green(
+                  formatPathToRelative(context.targetPackagePath, targetPath),
+                )}`
+
                 break
               }
 
               case 'unlink': {
                 await removeFileAndContainingDirectoryIfEmpty(targetPath)
-                intermediateTask.resolve(`Removed ${targetPath}`)
-                intermediateTask = createIntermediateTask()
-                newList.add(intermediateTask.task)
+                task.output = `Removed ${targetPath}`
                 break
               }
 
@@ -110,25 +114,20 @@ export function startWatcherTask(): ListrTask<Context> {
             }
           })
           .catch((error) => {
+            const knownError = toErrorWithMessage(error)
             notifier.notify({
               title: 'linkandtink',
-              message: `An error occured. Please check console for more info.`,
+              message: knownError.message,
             })
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            intermediateTask.reject(error)
+
+            intermediateTask.reject(knownError)
             intermediateTask = createIntermediateTask()
           })
       })
 
-      listenToQuitKey(() => {
-        newList.add({
-          title: 'Close watcher',
-          task: async (_context) => {
-            await watcher.close()
-          },
-        })
-
-        intermediateTask.resolve('Quitting')
+      eventBus.on('exit', async () => {
+        await watcher.close()
+        intermediateTask.resolve()
       })
 
       return newList

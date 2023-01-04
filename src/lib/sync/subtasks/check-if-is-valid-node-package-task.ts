@@ -5,21 +5,13 @@ import {
   validateDependentPackage,
   validateRootPackage,
 } from '@/lib/misc'
-import type { Context } from '@/lib/sync/tasks'
+import type { ParentTask } from '@/lib/sync/tasks'
 
-import type { ListrTaskWrapper, ListrTask, ListrDefaultRenderer } from 'listr2'
+import type { ListrTask } from 'listr2'
 
 export function checkIfIsValidNodePackageTask(
   packagePath: string,
-  parentTask: Parameters<
-    Extract<
-      Parameters<
-        ListrTaskWrapper<Context, ListrDefaultRenderer>['newListr']
-      >[0],
-      // eslint-disable-next-line @typescript-eslint/ban-types
-      Function
-    >
-  >[0],
+  parentTask: ParentTask,
   isRoot: boolean,
 ): ListrTask {
   return {
@@ -33,10 +25,7 @@ export function checkIfIsValidNodePackageTask(
       const name = await getPackageNiceName(packagePath)
 
       task.output = `Found package ${name}`
-      parentTask.title = `${parentTask.title} [${
-        isRoot ? chalk.green(name) : chalk.blue(name)
-      }]`
+      parentTask.title += ` [${isRoot ? chalk.green(name) : chalk.blue(name)}]`
     },
-    options: { persistentOutput: true },
   }
 }

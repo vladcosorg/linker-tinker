@@ -2,6 +2,11 @@ interface ErrorWithMessage {
   message: string
 }
 
+export class PrematureExitError extends Error {
+  override message =
+    'The watcher command returned prematurely. Its script should run continously until cancelled.'
+}
+
 function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
   return (
     typeof error === 'object' &&
@@ -11,7 +16,7 @@ function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
   )
 }
 
-function toErrorWithMessage(maybeError: unknown): ErrorWithMessage {
+export function toErrorWithMessage(maybeError: unknown): ErrorWithMessage {
   if (isErrorWithMessage(maybeError)) return maybeError
 
   try {
