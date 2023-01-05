@@ -2,7 +2,7 @@ import path from 'node:path'
 
 import { expect, it, describe } from 'vitest'
 
-import { getTargetPath, getPackageName, getPackageNiceName } from '@/lib/misc'
+import { getPackageName, getPackageNiceName, getOppositePath } from '@/lib/misc'
 import { getPackList } from '@/lib/packlist'
 
 import { getFsHelpers } from './helpers'
@@ -15,9 +15,10 @@ it('should return a path to a package in node_modules', async () => {
   const dependencyFilePath = cwd.path(relativeDepencencyFilePath)
 
   const primaryRoot = temporaryCwd.cwd('primary')
-  const actualResult = await getTargetPath(
+  const actualResult = getOppositePath(
     dependencyFilePath,
     cwd.path(),
+    packageName,
     primaryRoot.path(),
   )
   const expectedResult = primaryRoot.path(

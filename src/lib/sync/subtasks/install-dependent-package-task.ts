@@ -1,11 +1,9 @@
 import { runNpmInstall } from '@/lib/run'
-import type { Context } from '@/lib/sync/tasks'
-
-import type { ListrTask } from 'listr2'
+import type { Task } from '@/lib/sync/tasks'
 
 export function installTheDependentPackageTask(
   title = 'Installing the package',
-): ListrTask<Context> {
+): Task {
   return {
     title,
     task: async (context, task): Promise<void> => {

@@ -13,6 +13,7 @@ import { getPackListTask } from '@/lib/sync/subtasks/get-pack-list-task'
 import { gracefulExitTask } from '@/lib/sync/subtasks/graceful-exit-task'
 import { installTheDependentPackageTask } from '@/lib/sync/subtasks/install-dependent-package-task'
 import { maybeRunDependencyWatcherTask } from '@/lib/sync/subtasks/maybe-run-dependency-watcher-task'
+import { startReverseWatcherTask } from '@/lib/sync/subtasks/start-reverse-watcher-task'
 import { startWatcherTask } from '@/lib/sync/subtasks/start-watcher-task'
 
 import type {
@@ -29,7 +30,10 @@ export interface Context {
   syncPaths: string[] | string
   runWatcherScript: string | undefined
   debug: boolean
+  bidirectionalSync: boolean
   watchAll: boolean
+  pendingBidirectionalUpdates: { fromSource: string[]; toSource: string[] }
+  dependentPackageName: string
 }
 
 export type Task = ListrTask<Context, ListrDefaultRenderer>
@@ -95,9 +99,16 @@ function getTasks(): Array<ListrTask<Context>> {
       title: 'Running watchers',
 
       task: (_context, task) =>
-        task.newListr([startWatcherTask(), maybeRunDependencyWatcherTask()], {
-          concurrent: true,
-        }),
+        task.newListr(
+          [
+            startWatcherTask(),
+            startReverseWatcherTask(),
+            maybeRunDependencyWatcherTask(),
+          ],
+          {
+            concurrent: true,
+          },
+        ),
     },
     gracefulExitTask(),
   ]

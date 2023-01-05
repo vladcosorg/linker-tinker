@@ -70,16 +70,66 @@ export async function copyFile(
   await copy(fromPath, toPath)
 }
 
-export async function getTargetPath(
+function getInstalledPathFromSourcePath(
   sourcePath: string,
-  sourcePackageRoot: string,
-  targetPackageRoot: string,
+  dependentPackagePath: string,
+  dependentPackageName: string,
+  rootPackagePath: string,
+): string {
+  return path.join(
+    rootPackagePath,
+    'node_modules',
+    dependentPackageName,
+    sourcePath.slice(dependentPackagePath.length + 1),
+  )
+}
+
+function getSourcePathFromInstalledPath(
+  installedPath: string,
+  dependentPackagePath: string,
+  dependentPackageName: string,
+  rootPackagePath: string,
+): string {
+  const targetDependentPackageRoot = path.join(
+    rootPackagePath,
+    'node_modules',
+    dependentPackageName,
+  )
+  return path.join(
+    dependentPackagePath,
+    installedPath.slice(targetDependentPackageRoot.length + 1),
+  )
+}
+
+export function getOppositePath(
+  inputPath: string,
+  dependentPackagePath: string,
+  dependentPackageName: string,
+  rootPackagePath: string,
+): string {
+  return inputPath.startsWith(dependentPackagePath)
+    ? getInstalledPathFromSourcePath(
+        inputPath,
+        dependentPackagePath,
+        dependentPackageName,
+        rootPackagePath,
+      )
+    : getSourcePathFromInstalledPath(
+        inputPath,
+        dependentPackagePath,
+        dependentPackageName,
+        rootPackagePath,
+      )
+}
+
+export async function getInstalledDependencyPath(
+  rootPackagePath: string,
+  dependentPackagePath: string,
 ): Promise<string> {
   return path.join(
-    targetPackageRoot,
+    rootPackagePath,
     'node_modules',
-    await getPackageName(sourcePackageRoot),
-    sourcePath.slice(sourcePackageRoot.length + 1),
+    await getPackageName(dependentPackagePath),
   )
 }
 

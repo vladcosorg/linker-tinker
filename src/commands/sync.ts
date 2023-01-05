@@ -4,6 +4,7 @@ import process from 'node:process'
 import { Command, Flags } from '@oclif/core'
 import chalk from 'chalk'
 
+import { debug, debugLogger, enableDebug } from '@/lib/debug'
 import { runTasks } from '@/lib/sync/tasks'
 
 export default class Sync extends Command {
@@ -42,12 +43,17 @@ export default class Sync extends Command {
       description:
         'Enables the verbose mode and displays additional debug info that may help you',
     }),
+    bidirectionalSync: Flags.boolean({
+      char: 'b',
+      default: false,
+      description: 'Enabled bidirectional sync',
+    }),
     watchAll: Flags.boolean({
       char: 'a',
       default: false,
-      description: `Watch for all the changes in the ${chalk.bold(
+      description: `Sync  all the changes in the ${chalk.bold(
         'dependent',
-      )} package. By default, for performance reasons, this utility will watch only for the paths returned by ${chalk.green(
+      )} package. By default, this utility will watch only for the paths returned by ${chalk.green(
         '`npm pack`',
       )}`,
     }),
@@ -62,6 +68,11 @@ export default class Sync extends Command {
     const input = await this.parse(Sync)
     const inputArguments = input.args as Record<'from' | 'to', string>
     const inputFlags = input.flags
+
+    if (inputFlags.debug) {
+      enableDebug()
+    }
+
     await runTasks({
       renderer: inputFlags.verbose || inputFlags.debug ? 'verbose' : 'default',
       ctx: {
@@ -70,7 +81,10 @@ export default class Sync extends Command {
         syncPaths: path.resolve(inputArguments.from),
         runWatcherScript: inputFlags.watcherScript,
         debug: inputFlags.debug,
+        bidirectionalSync: inputFlags.bidirectionalSync,
         watchAll: inputFlags.watchAll,
+        pendingBidirectionalUpdates: { fromSource: [], toSource: [] },
+        dependentPackageName: '',
       },
     })
   }

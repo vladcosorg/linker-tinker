@@ -5,3 +5,7 @@
 - Support workspaces
 - Quick checkout a dep package from github
 - One time run script on change
+- Press second time to exit now
+- Optimize getTargetPath
+- Compare changed files by content
+- Handle multiple tinked packages
