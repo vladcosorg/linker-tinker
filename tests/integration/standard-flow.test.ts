@@ -5,7 +5,7 @@ import { mockProcessExit } from 'vitest-mock-process'
 import Sync from '../../src/commands/sync'
 import { runNpmReinstall } from '../../src/lib/run'
 import { getFsHelpers } from '../unit/helpers'
-import { waitUntiltoHaveBeenCalledWith } from '../util'
+import { expectUntil, waitUntiltoHaveBeenCalledWith } from '../util'
 
 const spy = vi.spyOn(console, 'log')
 const { createPackage } = getFsHelpers()
@@ -55,11 +55,11 @@ it('run full process', async () => {
 
   secondaryDirectorySynced.cwd.file('content.js', { content: '2' })
 
-  await waitUntiltoHaveBeenCalledWith(spy, [
-    '[SUCCESS] Copied from ./secondary/content.js to ./master/node_modules/secondary/content.js',
-  ])
-
-  expect(read(masterDirectory.cwd.path(contentFilePath))).toBe('2')
+  const validValue = '2'
+  await expectUntil(
+    () => read(masterDirectory.cwd.path(contentFilePath)),
+    validValue,
+  ).toBe(validValue)
 
   process.stdin.emit('keypress', undefined, { name: 'ę' })
   await waitUntiltoHaveBeenCalledWith(spy, [

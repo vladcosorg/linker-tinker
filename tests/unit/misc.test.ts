@@ -2,7 +2,13 @@ import path from 'node:path'
 
 import { expect, it, describe } from 'vitest'
 
-import { getPackageName, getPackageNiceName, getOppositePath } from '@/lib/misc'
+import {
+  getPackageName,
+  getPackageNiceName,
+  getOppositePath,
+  getInstalledPackageConfiguration,
+  dependencyTypes,
+} from '@/lib/misc'
 import { getPackList } from '@/lib/packlist'
 
 import { getFsHelpers } from './helpers'
@@ -78,5 +84,39 @@ describe('getPackageNiceName', () => {
     })
 
     await expect(getPackageNiceName(cwd.path())).resolves.toBe(directoryName)
+  })
+})
+
+describe('getInstalledPackageConfiguration', () => {
+  it.each(dependencyTypes.map((type) => [type]))(
+    `should return package configuration from %s if present`,
+    async (dependencyType) => {
+      const masterDirectory = createPackage({
+        files: {
+          'package.json': {
+            name: 'master',
+            [dependencyType]: {
+              dependent: '^5.0.0',
+            },
+          },
+        },
+      })
+      await expect(
+        getInstalledPackageConfiguration(
+          'dependent',
+          masterDirectory.cwd.path(),
+        ),
+      ).resolves.toEqual({
+        versionRange: '^5.0.0',
+        dependencyType,
+      })
+    },
+  )
+
+  it('should return false if not installed', async () => {
+    const masterDirectory = createPackage({})
+    await expect(
+      getInstalledPackageConfiguration('dependent', masterDirectory.cwd.path()),
+    ).resolves.toBeUndefined()
   })
 })

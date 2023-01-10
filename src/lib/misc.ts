@@ -2,12 +2,14 @@ import path from 'node:path'
 
 import { copy } from 'fs-extra'
 import jetpack from 'fs-jetpack'
+import { pick } from 'lodash'
 
-interface PackageJSON {
-  name?: string
-  dependencies?: Record<string, string>
-  devDependencies?: Record<string, string>
-}
+import type { Entries } from 'type-fest'
+
+export const dependencyTypes = ['dependencies', 'devDependencies'] as const
+type PackageJSON = {
+  [k in typeof dependencyTypes[number]]: Record<string, string>
+} & { name: string }
 
 async function getPackageJson(packageDirectory: string): Promise<PackageJSON> {
   const cwd = jetpack.cwd(packageDirectory)
@@ -22,6 +24,33 @@ async function getPackageJson(packageDirectory: string): Promise<PackageJSON> {
   }
 
   return contents
+}
+
+export async function getInstalledPackageConfiguration(
+  dependentPackageName: string,
+  rootPackagePath: string,
+): Promise<
+  | {
+      versionRange: string
+      dependencyType: typeof dependencyTypes[number]
+    }
+  | undefined
+> {
+  const packageJson = await getPackageJson(rootPackagePath)
+  const fields = pick(packageJson, ...dependencyTypes)
+  for (const [dependencyType, dependencies] of Object.entries(
+    pick(packageJson, ...dependencyTypes),
+  ) as Entries<typeof fields>) {
+    const versionRange = dependencies[dependentPackageName]
+    if (versionRange) {
+      return {
+        versionRange,
+        dependencyType,
+      }
+    }
+  }
+
+  return undefined
 }
 
 export async function getPackageName(
@@ -130,18 +159,6 @@ export async function getInstalledDependencyPath(
     rootPackagePath,
     'node_modules',
     await getPackageName(dependentPackagePath),
-  )
-}
-
-export async function isPackageInstalled(
-  packagePath: string,
-  dependencyName: string,
-): Promise<boolean> {
-  const packageJson = await getPackageJson(packagePath)
-
-  return Boolean(
-    packageJson.devDependencies?.[dependencyName] ??
-      packageJson.dependencies?.[dependencyName],
   )
 }
 

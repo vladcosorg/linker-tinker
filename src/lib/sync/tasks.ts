@@ -4,9 +4,10 @@ import { Manager } from 'listr2'
 
 import { terminate } from '@/lib/child-process'
 import { eventBus } from '@/lib/event-emitter'
+import type { getInstalledPackageConfiguration } from '@/lib/misc'
 import { prepareStdin } from '@/lib/stdin'
+import { backupInstalledVersion } from '@/lib/sync/subtasks/backup-installed-version'
 import { checkIfIsValidNodePackageTask } from '@/lib/sync/subtasks/check-if-is-valid-node-package-task'
-import { checkIfSourcePackageInstalledTask } from '@/lib/sync/subtasks/check-if-source-package-installed-task'
 import { checkIfThePathExistsTask } from '@/lib/sync/subtasks/check-if-the-path-exists-task'
 import { getFallbackPackList } from '@/lib/sync/subtasks/get-fallback-packlist-task'
 import { getPackListTask } from '@/lib/sync/subtasks/get-pack-list-task'
@@ -31,9 +32,14 @@ export interface Context {
   runWatcherScript: string | undefined
   debug: boolean
   bidirectionalSync: boolean
+  isExiting: boolean
+  skipWatch: boolean
   watchAll: boolean
   pendingBidirectionalUpdates: { fromSource: string[]; toSource: string[] }
   dependentPackageName: string
+  originalPackageConfiguration?: Awaited<
+    ReturnType<typeof getInstalledPackageConfiguration>
+  >
 }
 
 export type Task = ListrTask<Context, ListrDefaultRenderer>
@@ -49,6 +55,9 @@ export type ParentTask = Parameters<
 function getTasks(): Array<ListrTask<Context>> {
   return [
     {
+      enabled(context) {
+        return !context.isExiting
+      },
       title: 'Verifying the dependent package',
       task: (context, task) =>
         task.newListr<Context>((parent) => [
@@ -61,6 +70,9 @@ function getTasks(): Array<ListrTask<Context>> {
         ]),
     },
     {
+      enabled(context) {
+        return !context.isExiting
+      },
       title: 'Verifying the root package',
       task: (context, task) =>
         task.newListr((parent) => [
@@ -73,20 +85,22 @@ function getTasks(): Array<ListrTask<Context>> {
         ]),
     },
     {
-      enabled: true,
+      enabled(context) {
+        return !context.isExiting
+      },
       title: 'Dependent package installation in the the host package',
       task: (_context, task) =>
         task.newListr(
-          [
-            checkIfSourcePackageInstalledTask(),
-            installTheDependentPackageTask(),
-          ],
+          [backupInstalledVersion(), installTheDependentPackageTask()],
           {
             concurrent: false,
           },
         ),
     },
     {
+      enabled(context) {
+        return !context.isExiting
+      },
       title: 'Finding the files for sync',
       task: (_context, task) =>
         task.newListr((parent) => [
@@ -95,7 +109,9 @@ function getTasks(): Array<ListrTask<Context>> {
         ]),
     },
     {
-      enabled: true,
+      enabled(context) {
+        return !context.skipWatch && !context.isExiting
+      },
       title: 'Running watchers',
 
       task: (_context, task) =>
@@ -130,6 +146,11 @@ export async function runTasks<
   manager.add(getTasks())
 
   prepareStdin(override.ctx?.debug ?? false)
+
+  eventBus.on('exit', () => {
+    // @ts-expect-error TS being too cautious
+    manager.options.ctx.isExiting = true
+  })
 
   eventBus.on('exitImmediately', async () => {
     await terminate(process.pid)

@@ -9,3 +9,6 @@
 - Optimize getTargetPath
 - Compare changed files by content
 - Handle multiple tinked packages
+- Handle external SIGINT
+- Add option to not modify packag.json
+- Add option to restore EXACT version if modifying pacckage.json

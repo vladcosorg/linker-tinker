@@ -4,7 +4,7 @@ import process from 'node:process'
 import { Command, Flags } from '@oclif/core'
 import chalk from 'chalk'
 
-import { debug, debugLogger, enableDebug } from '@/lib/debug'
+import { enableDebug } from '@/lib/debug'
 import { runTasks } from '@/lib/sync/tasks'
 
 export default class Sync extends Command {
@@ -48,6 +48,11 @@ export default class Sync extends Command {
       default: false,
       description: 'Enabled bidirectional sync',
     }),
+    skipWatch: Flags.boolean({
+      char: 's',
+      default: false,
+      hidden: true,
+    }),
     watchAll: Flags.boolean({
       char: 'a',
       default: false,
@@ -74,8 +79,10 @@ export default class Sync extends Command {
     }
 
     await runTasks({
-      renderer: inputFlags.verbose || inputFlags.debug ? 'verbose' : 'default',
+      renderer: inputFlags.verbose || inputFlags.debug ? 'simple' : 'default',
       ctx: {
+        skipWatch: inputFlags.skipWatch,
+        isExiting: false,
         sourcePackagePath: path.resolve(inputArguments.from),
         targetPackagePath: path.resolve(inputArguments.to),
         syncPaths: path.resolve(inputArguments.from),

@@ -9,23 +9,52 @@ interface Options {
   checkInterval?: number
   bailTimeout?: number
 }
-export async function waitUntilTrue(
-  expression: () => boolean,
+
+async function waitUntilEqual<T>(
+  checkExpression: () => T,
+  expectedExpressionResult: T,
   { checkInterval = 500, bailTimeout = 5000 }: Options = {},
-): Promise<true> {
+): Promise<T> {
+  return new Promise((resolve, reject) => {
+    let lastResult: unknown
+    const tooLongInterval = setTimeout(() => {
+      reject(lastResult)
+    }, bailTimeout)
+
+    const cancelCheck = setInterval(() => {
+      lastResult = checkExpression()
+      if (lastResult === expectedExpressionResult) {
+        clearInterval(cancelCheck)
+        clearTimeout(tooLongInterval)
+        resolve(expectedExpressionResult)
+      }
+    }, checkInterval)
+  })
+}
+
+export async function waitUntilTrue<T>(
+  expression: () => T,
+  { checkInterval = 500, bailTimeout = 5000 }: Options = {},
+): Promise<T> {
   return new Promise((resolve, reject) => {
     const tooLongInterval = setTimeout(() => {
       reject(new Error('too long'))
     }, bailTimeout)
 
     const cancelCheck = setInterval(() => {
-      if (expression()) {
+      const result = expression()
+      if (result) {
         clearInterval(cancelCheck)
         clearTimeout(tooLongInterval)
-        resolve(true)
+        resolve(result)
       }
     }, checkInterval)
   })
+}
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export function expectUntil<T>(expression: () => T, expectedValue: T) {
+  return expect(waitUntilEqual(expression, expectedValue)).resolves
 }
 
 export async function waitUntiltoHaveBeenCalledWith(
