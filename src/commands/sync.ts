@@ -1,7 +1,7 @@
 import path from 'node:path'
 import process from 'node:process'
 
-import { Command, Flags } from '@oclif/core'
+import { Args, Command, Flags } from '@oclif/core'
 import chalk from 'chalk'
 
 import { enableDebug } from '@/lib/debug'
@@ -17,24 +17,27 @@ export default class Sync extends Command {
     },
   ]
 
-  static override args = [
-    {
-      name: 'from',
+  static override args = {
+    from: Args.string({
       description: 'Path to a package that you want to link',
       required: true,
-    },
-    {
-      name: 'to',
+    }),
+    to: Args.string({
       description: `Target package. If not specified, it will use the current cwd`,
       required: false,
-      default: () => process.cwd(),
-    },
-  ] satisfies NonNullable<typeof Command['args']>
+      default: process.cwd(),
+    }),
+  }
 
   static override flags = {
     verbose: Flags.boolean({
       char: 'v',
       description: 'Display a verbose action list',
+      default: false,
+    }),
+    noSymlink: Flags.boolean({
+      char: 'n',
+      description: 'Do not use symlink',
       default: false,
     }),
     debug: Flags.boolean({
@@ -70,28 +73,28 @@ export default class Sync extends Command {
   }
 
   async run(): Promise<void> {
-    const input = await this.parse(Sync)
-    const inputArguments = input.args as Record<'from' | 'to', string>
-    const inputFlags = input.flags
+    const { args, flags } = await this.parse(Sync)
 
-    if (inputFlags.debug) {
+    if (flags.debug) {
       enableDebug()
     }
 
     await runTasks({
-      renderer: inputFlags.verbose || inputFlags.debug ? 'simple' : 'default',
+      renderer: flags.verbose || flags.debug ? 'simple' : 'default',
       ctx: {
-        skipWatch: inputFlags.skipWatch,
+        skipWatch: flags.skipWatch,
+        noSymlink: flags.noSymlink,
         isExiting: false,
-        sourcePackagePath: path.resolve(inputArguments.from),
-        targetPackagePath: path.resolve(inputArguments.to),
-        syncPaths: path.resolve(inputArguments.from),
-        runWatcherScript: inputFlags.watcherScript,
-        debug: inputFlags.debug,
-        bidirectionalSync: inputFlags.bidirectionalSync,
-        watchAll: inputFlags.watchAll,
+        sourcePackagePath: path.resolve(args.from),
+        targetPackagePath: path.resolve(args.to),
+        syncPaths: path.resolve(args.from),
+        runWatcherScript: flags.watcherScript,
+        debug: flags.debug,
+        bidirectionalSync: flags.bidirectionalSync,
+        watchAll: flags.watchAll,
         pendingBidirectionalUpdates: { fromSource: [], toSource: [] },
         dependentPackageName: '',
+        intermediatePackagePath: '',
       },
     })
   }

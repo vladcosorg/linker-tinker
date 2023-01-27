@@ -22,15 +22,17 @@ export function runNpmInstall(
     versionRange,
     dependencyType,
   }: {
-    dependencyType?: typeof dependencyTypeList[number]
+    dependencyType?: (typeof dependencyTypeList)[number]
     versionRange?: string
   } = {},
 ): ExecaChildProcess {
-  const dependencyTypeFlags: Record<typeof dependencyTypeList[number], string> =
-    {
-      dependencies: '--save-prod',
-      devDependencies: '--save-dev',
-    }
+  const dependencyTypeFlags: Record<
+    (typeof dependencyTypeList)[number],
+    string
+  > = {
+    dependencies: '--save-prod',
+    devDependencies: '--save-dev',
+  }
   const options = [
     'install',
     versionRange ? `${dependencyName}@${versionRange}` : dependencyName,
@@ -38,6 +40,41 @@ export function runNpmInstall(
     '--no-audit',
     '--no-fund',
     '--ignore-scripts',
+  ]
+
+  if (dependencyType) {
+    options.push(dependencyTypeFlags[dependencyType])
+  }
+
+  return cancellableExeca('npm', options, {
+    cwd: rootPackagePath,
+    all: true,
+    shell: true,
+  })
+}
+
+export function runNpmLink(
+  rootPackagePath: string,
+  dependencyName: string,
+  {
+    versionRange,
+    dependencyType,
+  }: {
+    dependencyType?: (typeof dependencyTypeList)[number]
+    versionRange?: string
+  } = {},
+): ExecaChildProcess {
+  const dependencyTypeFlags: Record<
+    (typeof dependencyTypeList)[number],
+    string
+  > = {
+    dependencies: '--save-prod',
+    devDependencies: '--save-dev',
+  }
+  const options = [
+    'link',
+    versionRange ? `${dependencyName}@${versionRange}` : dependencyName,
+    '--install-links',
   ]
 
   if (dependencyType) {

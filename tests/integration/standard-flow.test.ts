@@ -63,7 +63,7 @@ it('run full process', async () => {
 
   process.stdin.emit('keypress', undefined, { name: 'ę' })
   await waitUntiltoHaveBeenCalledWith(spy, [
-    '[SUCCESS] Reverting to the previous package version',
+    '[SUCCESS] Restoring original version',
   ])
   expect(read(masterDirectory.cwd.path(contentFilePath))).toBe('0')
   expect(mockExit).toHaveBeenCalledWith(0)

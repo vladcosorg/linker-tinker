@@ -1,3 +1,5 @@
+import path from 'node:path'
+
 import chalk from 'chalk'
 
 import {
@@ -23,6 +25,11 @@ export function checkIfIsValidNodePackageTask(
 
       if (!isRoot) {
         context.dependentPackageName = await getPackageName(packagePath)
+        context.intermediatePackagePath = path.join(
+          context.targetPackagePath,
+          '.linker-tinker',
+          context.dependentPackageName,
+        )
       }
 
       const name = await getPackageNiceName(packagePath)

@@ -1,5 +1,7 @@
+import path from 'node:path'
 import process from 'node:process'
 
+import jetpack from 'fs-jetpack'
 import { Manager } from 'listr2'
 
 import { terminate } from '@/lib/child-process'
@@ -28,12 +30,14 @@ import type {
 export interface Context {
   sourcePackagePath: string
   targetPackagePath: string
+  intermediatePackagePath: string
   syncPaths: string[] | string
   runWatcherScript: string | undefined
   debug: boolean
   bidirectionalSync: boolean
   isExiting: boolean
   skipWatch: boolean
+  noSymlink: boolean
   watchAll: boolean
   pendingBidirectionalUpdates: { fromSource: string[]; toSource: string[] }
   dependentPackageName: string
@@ -84,19 +88,7 @@ function getTasks(): Array<ListrTask<Context>> {
           ),
         ]),
     },
-    {
-      enabled(context) {
-        return !context.isExiting
-      },
-      title: 'Dependent package installation in the the host package',
-      task: (_context, task) =>
-        task.newListr(
-          [backupInstalledVersion(), installTheDependentPackageTask()],
-          {
-            concurrent: false,
-          },
-        ),
-    },
+    backupInstalledVersion(),
     {
       enabled(context) {
         return !context.isExiting
@@ -107,6 +99,49 @@ function getTasks(): Array<ListrTask<Context>> {
           getPackListTask(parent),
           getFallbackPackList(parent),
         ]),
+    },
+    {
+      enabled(context) {
+        return !context.noSymlink
+      },
+      title: 'Creating intermediate package',
+      task: async (context, task) => {
+        if (Array.isArray(context.syncPaths)) {
+          await Promise.all(
+            context.syncPaths.map(async (filePath) =>
+              jetpack.copyAsync(
+                path.join(context.sourcePackagePath, filePath),
+                path.join(context.intermediatePackagePath, filePath),
+                {
+                  overwrite: true,
+                },
+              ),
+            ),
+          )
+        }
+      },
+    },
+    {
+      enabled(context) {
+        return !context.isExiting && context.noSymlink
+      },
+      title: 'Dependent package installation in the the host package',
+      task: (_context, task) =>
+        task.newListr([installTheDependentPackageTask()], {
+          concurrent: false,
+        }),
+    },
+    {
+      enabled(context) {
+        return !context.noSymlink
+      },
+      title: 'Creating symlink',
+      task: async (context, task) => {
+        await jetpack.symlinkAsync(
+          context.targetPackagePath,
+          context.intermediatePackagePath,
+        )
+      },
     },
     {
       enabled(context) {
