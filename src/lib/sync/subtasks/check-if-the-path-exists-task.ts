@@ -1,10 +1,8 @@
 import fs from 'fs-extra'
 
-import type { Context } from '@/lib/sync/tasks'
-
 import type { ListrTask } from 'listr2'
 
-export function checkIfThePathExistsTask(userPath: string): ListrTask<Context> {
+export function checkIfThePathExistsTask(userPath: string): ListrTask {
   return {
     title: 'Checking if the path exists and is a directory',
     task: async () => {

@@ -5,10 +5,9 @@ import { Args, Command, Flags } from '@oclif/core'
 import chalk from 'chalk'
 
 import { enableDebug } from '@/lib/debug'
-import { getTasks } from '@/lib/sync/tasks'
-import { runTasks } from '@/task-runner'
+import { runTasks } from '@/lib/watch/tasks'
 
-export default class Sync extends Command {
+export default class Watch extends Command {
   static override description = 'Link and sync a package as a dependency'
 
   static override examples = [
@@ -74,13 +73,13 @@ export default class Sync extends Command {
   }
 
   async run(): Promise<void> {
-    const { args, flags } = await this.parse(Sync)
+    const { args, flags } = await this.parse(Watch)
 
     if (flags.debug) {
       enableDebug()
     }
 
-    await runTasks(getTasks(), {
+    await runTasks({
       renderer: flags.verbose || flags.debug ? 'simple' : 'default',
       ctx: {
         skipWatch: flags.skipWatch,

@@ -1,27 +1,40 @@
-import { runNpmInstall } from '@/lib/run'
+import type { RequiredContext } from '@/lib/context'
+import {
+  getActiveRunsForPackage,
+  resetActiveRunsForPackage,
+} from '@/lib/persistent-storage'
+import { runNpmInstall, runNpmUninstall } from '@/lib/run'
 import type { Task } from '@/lib/sync/tasks'
 
-export function restoreOriginalVersion(): Task {
+import type { ExecaChildProcess } from 'execa'
+
+export function restoreOriginalVersion(): Task<
+  RequiredContext<'dependentPackageName'>
+> {
   return {
-    enabled: (context) => context.originalPackageConfiguration !== undefined,
     title: 'Restoring original version',
     task: async (context, task): Promise<void> => {
-      if (!context.originalPackageConfiguration) {
+      const runs = getActiveRunsForPackage(context.dependentPackageName)
+      if (!runs) {
         return
       }
 
-      const child = runNpmInstall(
-        context.targetPackagePath,
-        context.dependentPackageName,
-        {
-          versionRange: context.originalPackageConfiguration.versionRange,
-          dependencyType: context.originalPackageConfiguration.dependencyType,
-        },
-      )
+      const commandPromises: ExecaChildProcess[] = []
 
-      child.all?.pipe(task.stdout())
+      for (const [targetPackage, packageConfig] of Object.entries(runs)) {
+        const child = packageConfig
+          ? runNpmInstall(
+              targetPackage,
+              context.dependentPackageName,
+              packageConfig,
+            )
+          : runNpmUninstall(targetPackage, context.dependentPackageName)
+        child.all?.pipe(task.stdout())
+        commandPromises.push(child)
+      }
 
-      await child
+      await Promise.all(commandPromises)
+      resetActiveRunsForPackage(context.dependentPackageName)
     },
   }
 }

@@ -9,22 +9,25 @@ import type { ExecaChildProcess } from 'execa'
 const cancellableExeca = function (...parameters: Parameters<typeof execa>) {
   debugConsole.log(parameters)
   const child = execa(...(parameters as Parameters<typeof execa>))
-  eventBus.on('exit', () => {
+  eventBus.on('exitImmediately', () => {
     child.cancel()
+  })
+  void child.then((result) => {
+    debugConsole.log(result.command)
+    return result
   })
   return child
 } as unknown as typeof execa
 
+export type PackageConfig = {
+  dependencyType?: (typeof dependencyTypeList)[number]
+  versionRange?: string
+} | null
+
 export function runNpmInstall(
   rootPackagePath: string,
   dependencyName: string,
-  {
-    versionRange,
-    dependencyType,
-  }: {
-    dependencyType?: (typeof dependencyTypeList)[number]
-    versionRange?: string
-  } = {},
+  config: PackageConfig = {},
 ): ExecaChildProcess {
   const dependencyTypeFlags: Record<
     (typeof dependencyTypeList)[number],
@@ -33,17 +36,20 @@ export function runNpmInstall(
     dependencies: '--save-prod',
     devDependencies: '--save-dev',
   }
+
   const options = [
     'install',
-    versionRange ? `${dependencyName}@${versionRange}` : dependencyName,
+    config?.versionRange
+      ? `${dependencyName}@${config.versionRange}`
+      : dependencyName,
     '--install-links',
     '--no-audit',
     '--no-fund',
     '--ignore-scripts',
   ]
 
-  if (dependencyType) {
-    options.push(dependencyTypeFlags[dependencyType])
+  if (config?.dependencyType) {
+    options.push(dependencyTypeFlags[config.dependencyType])
   }
 
   return cancellableExeca('npm', options, {

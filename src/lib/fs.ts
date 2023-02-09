@@ -1,5 +1,6 @@
 import path from 'node:path'
 
+import getCacheDir from 'cachedir'
 import jetpack from 'fs-jetpack'
 
 export async function removeFileAndContainingDirectoryIfEmpty(
@@ -19,4 +20,24 @@ export async function removeFileAndContainingDirectoryIfEmpty(
   if (folderFiles.length === 0) {
     await jetpack.removeAsync(fileDirectory)
   }
+}
+
+async function createCacheDirectory(cacheDirectory: string): Promise<void> {
+  if (await jetpack.existsAsync(cacheDirectory)) {
+    return
+  }
+
+  await jetpack.dirAsync(cacheDirectory)
+}
+
+const createdDirectories: Record<string, string> = {}
+export async function getGlobalCacheDirectory(name: string): Promise<string> {
+  let cachedCacheDirectory = createdDirectories[name]
+
+  if (!cachedCacheDirectory) {
+    cachedCacheDirectory = getCacheDir(name)
+    await createCacheDirectory(cachedCacheDirectory)
+  }
+
+  return cachedCacheDirectory
 }

@@ -1,7 +1,6 @@
-import path from 'node:path'
-
 import chalk from 'chalk'
 
+import type { RequiredContext } from '@/lib/context'
 import {
   getPackageName,
   getPackageNiceName,
@@ -10,11 +9,9 @@ import {
 } from '@/lib/misc'
 import type { ParentTask, Task } from '@/lib/sync/tasks'
 
-export function checkIfIsValidNodePackageTask(
-  packagePath: string,
-  parentTask: ParentTask,
-  isRoot: boolean,
-): Task {
+export function checkIfIsValidNodePackageTask<
+  T extends RequiredContext<'dependentPackageName'>,
+>(packagePath: string, parentTask: ParentTask<T>, isRoot: boolean): Task<T> {
   return {
     title: 'Checking if the path is a valid node package',
     task: async (context, task): Promise<void> => {
@@ -25,11 +22,6 @@ export function checkIfIsValidNodePackageTask(
 
       if (!isRoot) {
         context.dependentPackageName = await getPackageName(packagePath)
-        context.intermediatePackagePath = path.join(
-          context.targetPackagePath,
-          '.linker-tinker',
-          context.dependentPackageName,
-        )
       }
 
       const name = await getPackageNiceName(packagePath)

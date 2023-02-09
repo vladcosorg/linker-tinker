@@ -1,3 +1,4 @@
+import { getIntermediatePath } from '@/lib/misc'
 import { runNpmInstall } from '@/lib/run'
 import type { Task } from '@/lib/sync/tasks'
 
@@ -9,7 +10,7 @@ export function installTheDependentPackageTask(
     task: async (context, task): Promise<void> => {
       const process = runNpmInstall(
         context.targetPackagePath,
-        context.sourcePackagePath,
+        await getIntermediatePath(context.dependentPackageName),
       )
       process.all?.pipe(task.stdout())
       await process

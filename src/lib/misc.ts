@@ -4,11 +4,13 @@ import { copy } from 'fs-extra'
 import jetpack from 'fs-jetpack'
 import { pick } from 'lodash'
 
+import { getGlobalCacheDirectory } from '@/lib/fs'
+
 import type { Entries } from 'type-fest'
 
 export const dependencyTypes = ['dependencies', 'devDependencies'] as const
 type PackageJSON = {
-  [k in typeof dependencyTypes[number]]: Record<string, string>
+  [k in (typeof dependencyTypes)[number]]: Record<string, string>
 } & { name: string }
 
 async function getPackageJson(packageDirectory: string): Promise<PackageJSON> {
@@ -32,7 +34,7 @@ export async function getInstalledPackageConfiguration(
 ): Promise<
   | {
       versionRange: string
-      dependencyType: typeof dependencyTypes[number]
+      dependencyType: (typeof dependencyTypes)[number]
     }
   | undefined
 > {
@@ -167,4 +169,10 @@ export function formatPathToRelative(
   relativePath: string,
 ): string {
   return `./${path.relative(path.join(rootPath, '..'), relativePath)}`
+}
+
+export async function getIntermediatePath(
+  packageName: string,
+): Promise<string> {
+  return path.join(await getGlobalCacheDirectory('linker-tinker'), packageName)
 }

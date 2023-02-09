@@ -1,6 +1,8 @@
 import process from 'node:process'
 import readline from 'node:readline'
 
+import { terminate } from '@/lib/child-process'
+import type { BaseContext } from '@/lib/context'
 import { eventBus } from '@/lib/event-emitter'
 
 type EventHandler = (
@@ -21,7 +23,6 @@ function handleKeywordInterrupt(debug: boolean) {
 
   if (!exiting) {
     eventBus.emit('exit')
-    eventBus.emit('exitImmediatelyIntent')
     exiting = true
     return
   }
@@ -53,11 +54,20 @@ function createKeypressHandler(debug: boolean): EventHandler {
   }
 }
 
-export function prepareStdin(debug = false): void {
+export function prepareStdin(context: BaseContext): void {
   readline.emitKeypressEvents(process.stdin)
   if (process.stdin.isTTY) {
     process.stdin.setRawMode(true)
   }
 
-  process.stdin.once('keypress', createKeypressHandler(debug))
+  process.stdin.once('keypress', createKeypressHandler(context.debug))
+
+  eventBus.on('exit', () => {
+    context.isExiting = true
+  })
+
+  eventBus.on('exitImmediately', async () => {
+    await terminate(process.pid)
+    process.exit(0)
+  })
 }
