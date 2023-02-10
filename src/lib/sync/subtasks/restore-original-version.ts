@@ -1,16 +1,13 @@
-import type { RequiredContext } from '@/lib/context'
 import {
   getActiveRunsForPackage,
   resetActiveRunsForPackage,
 } from '@/lib/persistent-storage'
 import { runNpmInstall, runNpmUninstall } from '@/lib/run'
-import type { Task } from '@/lib/sync/tasks'
+import type { ContextualTaskWithRequired } from '@/lib/tasks'
 
 import type { ExecaChildProcess } from 'execa'
 
-export function restoreOriginalVersion(): Task<
-  RequiredContext<'dependentPackageName'>
-> {
+export function restoreOriginalVersion(): ContextualTaskWithRequired<'dependentPackageName'> {
   return {
     title: 'Restoring original version',
     task: async (context, task): Promise<void> => {

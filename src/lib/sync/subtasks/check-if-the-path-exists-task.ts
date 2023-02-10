@@ -1,8 +1,10 @@
 import fs from 'fs-extra'
 
-import type { ListrTask } from 'listr2'
+import type { ContextualTaskWithRequired } from '@/lib/tasks'
 
-export function checkIfThePathExistsTask(userPath: string): ListrTask {
+export function checkIfThePathExistsTask(
+  userPath: string,
+): ContextualTaskWithRequired {
   return {
     title: 'Checking if the path exists and is a directory',
     task: async () => {

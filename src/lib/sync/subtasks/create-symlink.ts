@@ -3,9 +3,11 @@ import path from 'node:path'
 import jetpack, { removeAsync } from 'fs-jetpack'
 
 import { getIntermediatePath } from '@/lib/misc'
-import type { Task } from '@/lib/sync/tasks'
+import type { ContextualTaskWithRequired } from '@/lib/tasks'
 
-export function createSymlinkTask(): Task {
+export function createSymlinkTask(): ContextualTaskWithRequired<
+  'dependentPackageName' | 'noSymlink' | 'targetPackagePath'
+> {
   return {
     enabled(context) {
       return !context.noSymlink

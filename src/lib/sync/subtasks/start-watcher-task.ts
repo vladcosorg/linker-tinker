@@ -2,7 +2,7 @@ import { watch } from 'chokidar'
 
 import { eventBus } from '@/lib/event-emitter'
 import { getPackList } from '@/lib/packlist'
-import type { Context } from '@/lib/sync/tasks'
+import type { ContextualTaskWithRequired } from '@/lib/tasks'
 import {
   createPendingTaskList,
   handleWatcherEvents,
@@ -10,9 +10,13 @@ import {
   isRecursionEvent,
 } from '@/lib/watcher'
 
-import type { ListrTask } from 'listr2'
-
-export function startWatcherTask(): ListrTask<Context> {
+export function startWatcherTask(): ContextualTaskWithRequired<
+  | 'bidirectionalSync'
+  | 'pendingBidirectionalUpdates'
+  | 'sourcePackagePath'
+  | 'syncPaths'
+  | 'watchAll'
+> {
   return {
     options: {
       bottomBar: 5,

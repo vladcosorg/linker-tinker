@@ -2,16 +2,19 @@ import { watch } from 'chokidar'
 
 import { eventBus } from '@/lib/event-emitter'
 import { getInstalledDependencyPath } from '@/lib/misc'
-import type { Context } from '@/lib/sync/tasks'
+import type { ContextualTaskWithRequired } from '@/lib/tasks'
 import {
   createPendingTaskList,
   handleWatcherEvents,
   isRecursionEvent,
 } from '@/lib/watcher'
 
-import type { ListrTask } from 'listr2'
-
-export function startReverseWatcherTask(): ListrTask<Context> {
+export function startReverseWatcherTask(): ContextualTaskWithRequired<
+  | 'bidirectionalSync'
+  | 'pendingBidirectionalUpdates'
+  | 'sourcePackagePath'
+  | 'targetPackagePath'
+> {
   return {
     enabled(context) {
       return context.bidirectionalSync

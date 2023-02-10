@@ -1,15 +1,14 @@
-import type { RequiredContext } from '@/lib/context'
 import type { PackageConfig } from '@/lib/run'
 import { runNpmInstall, runNpmUninstall } from '@/lib/run'
-import type { Task } from '@/lib/sync/tasks'
+import type { ContextualTaskWithRequired } from '@/lib/tasks'
 
 export function restorePackageOriginalVersion(
   targetPackage: string,
   packageConfig: PackageConfig,
-): Task<RequiredContext<'dependentPackageName'>> {
+): ContextualTaskWithRequired<'dependentPackageName'> {
   return {
     title: 'Restoring original version',
-    task: async (context, task): Promise<void> => {
+    task: async (context, task) => {
       packageConfig
         ? (task.title = `The package [${
             context.dependentPackageName

@@ -4,13 +4,14 @@ import chalk from 'chalk'
 import { Listr } from 'listr2'
 import notifier from 'node-notifier'
 
+import type { Context } from '@/lib/context'
 import { debugConsole } from '@/lib/debug'
 import { deferred } from '@/lib/deferred'
 import { toErrorWithMessage } from '@/lib/error'
 import { removeFileAndContainingDirectoryIfEmpty } from '@/lib/fs'
 import { copyFile, formatPathToRelative, getOppositePath } from '@/lib/misc'
 import { installTheDependentPackageTask } from '@/lib/sync/subtasks/install-dependent-package-task'
-import type { Context, Task } from '@/lib/sync/tasks'
+import type { ContextualTask } from '@/lib/tasks'
 
 import type { ListrTask, ListrTaskWrapper, ListrDefaultRenderer } from 'listr2'
 
@@ -93,7 +94,7 @@ export function createPendingTaskList() {
       currentPendingTask.reject(error)
       currentPendingTask = newPendingTask
     },
-    addNextTask(task: Task) {
+    addNextTask(task: ContextualTask) {
       taskList.add(task)
       const newPendingTask = createIntermediateTask()
       taskList.add(newPendingTask.task)

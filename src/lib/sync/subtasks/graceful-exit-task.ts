@@ -2,11 +2,11 @@ import chalk from 'chalk'
 
 import { eventBus } from '@/lib/event-emitter'
 import { restoreOriginalVersion } from '@/lib/sync/subtasks/restore-original-version'
-import type { Context } from '@/lib/sync/tasks'
+import type { ContextualTaskWithRequired } from '@/lib/tasks'
 
-import type { ListrTask } from 'listr2'
-
-export function gracefulExitTask(): ListrTask<Context> {
+export function gracefulExitTask(): ContextualTaskWithRequired<
+  'dependentPackageName' | 'onlyAttach'
+> {
   return {
     enabled(context) {
       return !context.onlyAttach
@@ -14,7 +14,7 @@ export function gracefulExitTask(): ListrTask<Context> {
     title: chalk.grey(
       `Press ${chalk.red('q')} to close all the subprocesses and exit.`,
     ),
-    task: (_context, task) => {
+    task(_context, task): any {
       eventBus.on('exit', () => {
         task.title = `Press  ${chalk.bold.red(
           'CTRL+C',

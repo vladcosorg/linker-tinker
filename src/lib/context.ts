@@ -1,4 +1,4 @@
-export interface AllContextOptions {
+export interface Context {
   sourcePackagePath: string
   targetPackagePath: string
   syncPaths: string[] | string
@@ -14,8 +14,8 @@ export interface AllContextOptions {
   onlyAttach: boolean
 }
 
-export type RequiredContext<T extends keyof AllContextOptions> = Required<
-  Pick<AllContextOptions, T>
+export type RequiredContext<T extends keyof Context> = Required<
+  Pick<Context, T>
 >
 
 export type BaseContext = RequiredContext<'debug' | 'isExiting'>

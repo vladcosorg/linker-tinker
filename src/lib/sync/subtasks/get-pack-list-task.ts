@@ -1,31 +1,25 @@
-import chalk from 'chalk'
+import { getFallbackPackList } from '@/lib/sync/subtasks/get-fallback-packlist-task'
+import { getGranularPackListTask } from '@/lib/sync/subtasks/get-granular-pack-list-task'
+import type { ContextualTaskWithRequired } from '@/lib/tasks'
 
-import { getPackList } from '@/lib/packlist'
-import type { Context, ParentTask } from '@/lib/sync/tasks'
-
-import type { ListrTask } from 'listr2'
-
-export function getPackListTask(parent: ParentTask): ListrTask<Context> {
+export function getPackListTask(): ContextualTaskWithRequired<
+  | 'debug'
+  | 'isExiting'
+  | 'onlyAttach'
+  | 'sourcePackagePath'
+  | 'syncPaths'
+  | 'watchAll'
+> {
   return {
     enabled(context) {
-      return !context.watchAll
+      return !context.isExiting && !context.onlyAttach
     },
-    title: "Extracting the files from the 'npm pack' command",
-    task: async (context) => {
-      context.syncPaths = await getPackList(context.sourcePackagePath)
-
-      if (context.debug) {
-        console.info('Only these files will be synced:', context.syncPaths)
-      }
-
-      parent.title += chalk.grey(
-        ` [Found ${chalk.bold(
-          context.syncPaths.length,
-        )} files for sync. Add -d to see the list.]`,
-      )
-    },
-    options: {
-      exitOnError: false,
+    title: 'Finding the files for sync',
+    task(_context, task): any {
+      return task.newListr((parent) => [
+        getGranularPackListTask(parent),
+        getFallbackPackList(parent),
+      ])
     },
   }
 }

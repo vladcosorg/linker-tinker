@@ -5,9 +5,11 @@ import { debug } from 'oclif/lib/log'
 import { terminate } from '@/lib/child-process'
 import { PrematureExitError } from '@/lib/error'
 import { eventBus } from '@/lib/event-emitter'
-import type { Task } from '@/lib/sync/tasks'
+import type { ContextualTaskWithRequired } from '@/lib/tasks'
 
-export function maybeRunDependencyWatcherTask(): Task {
+export function maybeRunDependencyWatcherTask(): ContextualTaskWithRequired<
+  'debug' | 'runWatcherScript' | 'sourcePackagePath'
+> {
   return {
     enabled(context) {
       return context.runWatcherScript !== undefined

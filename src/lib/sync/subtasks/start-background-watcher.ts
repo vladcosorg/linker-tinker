@@ -1,7 +1,7 @@
 import { isWatcherRunningForPackage, launchBackgroundWatcher } from '@/lib/pm2'
-import type { Task } from '@/lib/sync/tasks'
+import type { ContextualTaskWithRequired } from '@/lib/tasks'
 
-export function startBackgroundWatcher(): Task {
+export function startBackgroundWatcher(): ContextualTaskWithRequired<'dependentPackageName'> {
   return {
     enabled: async (context) => {
       const isWatcherAlreadyRunning = await isWatcherRunningForPackage(

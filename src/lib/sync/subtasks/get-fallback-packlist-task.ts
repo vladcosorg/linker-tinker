@@ -1,10 +1,12 @@
 import chalk from 'chalk'
 
-import type { Context, ParentTask } from '@/lib/sync/tasks'
+import type { RequiredContext } from '@/lib/context'
+import type { ContextualTask, ParentTask } from '@/lib/tasks'
 
-import type { ListrTask } from 'listr2'
-
-export function getFallbackPackList(parent: ParentTask): ListrTask<Context> {
+type LocalContext = RequiredContext<'sourcePackagePath' | 'syncPaths'>
+export function getFallbackPackList(
+  parent: ParentTask<LocalContext>,
+): ContextualTask<LocalContext> {
   return {
     title:
       'Could not get the listr. Falling back to syncing the whole directory.',

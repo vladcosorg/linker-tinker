@@ -1,11 +1,11 @@
 import Conf from 'conf'
 import { merge, omit } from 'lodash'
 
+import type { RequiredContext } from '@/lib/context'
 import { debugConsole } from '@/lib/debug'
 import { eventBus } from '@/lib/event-emitter'
 import type { dependencyTypes as dependencyTypeList } from '@/lib/misc'
 import { getInstalledPackageConfiguration } from '@/lib/misc'
-import type { Context } from '@/lib/sync/tasks'
 
 function createOrGetPersistentStorage() {
   return new Conf<{
@@ -36,10 +36,10 @@ function createOrGetPersistentStorage() {
   })
 }
 
-function handleExit(context: Context) {
-  resetActiveRunsForPackage(context.dependentPackageName)
+function handleExit(dependentPackageName: string) {
+  resetActiveRunsForPackage(dependentPackageName)
   debugConsole.log(
-    `Emergency reset of configuration for ${context.dependentPackageName}`,
+    `Emergency reset of configuration for ${dependentPackageName}`,
   )
 }
 
@@ -77,7 +77,9 @@ export function resetActiveRunForPackage(
   })
 }
 
-export function registerNewActiveRun(context: Context): void {
+export function registerNewActiveRun(
+  context: RequiredContext<'dependentPackageName' | 'onlyAttach'>,
+): void {
   const storage = createOrGetPersistentStorage()
   const runs = storage.get('activeRuns', {})
   if (runs.hasOwnProperty(context.dependentPackageName)) {
@@ -89,24 +91,29 @@ export function registerNewActiveRun(context: Context): void {
     })
 
     eventBus.on('exitImmediately', () => {
-      handleExit(context)
+      handleExit(context.dependentPackageName)
     })
   }
 }
 
-export async function attachActiveRun(context: Context): Promise<void> {
+export async function attachActiveRun({
+  dependentPackageName,
+  targetPackagePath,
+}: RequiredContext<
+  'dependentPackageName' | 'targetPackagePath'
+>): Promise<void> {
   const storage = createOrGetPersistentStorage()
 
   const packageConfig = await getInstalledPackageConfiguration(
-    context.dependentPackageName,
-    context.targetPackagePath,
+    dependentPackageName,
+    targetPackagePath,
   )
 
   storage.set(
     'activeRuns',
     merge(storage.get('activeRuns'), {
-      [context.dependentPackageName]: {
-        [context.targetPackagePath]: packageConfig ?? null,
+      [dependentPackageName]: {
+        [targetPackagePath]: packageConfig ?? null,
       },
     }),
   )

@@ -2,7 +2,7 @@ import { read } from 'fs-jetpack'
 import { it, vi, expect } from 'vitest'
 import { mockProcessExit } from 'vitest-mock-process'
 
-import Sync from '../../src/commands/sync'
+import Link from '../../src/commands/link'
 import { runNpmReinstall } from '../../src/lib/run'
 import { getFsHelpers } from '../unit/helpers'
 import { expectUntil, waitUntiltoHaveBeenCalledWith } from '../util'
@@ -42,7 +42,7 @@ it('run full process', async () => {
 
   expect(read(masterDirectory.cwd.path(contentFilePath))).toBe('0')
 
-  void Sync.run([
+  void Link.run([
     secondaryDirectorySynced.cwd.path(),
     masterDirectory.cwd.path(),
   ])

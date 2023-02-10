@@ -7,11 +7,15 @@ import {
   validateDependentPackage,
   validateRootPackage,
 } from '@/lib/misc'
-import type { ParentTask, Task } from '@/lib/sync/tasks'
+import type { ContextualTask, ParentTask } from '@/lib/tasks'
 
 export function checkIfIsValidNodePackageTask<
   T extends RequiredContext<'dependentPackageName'>,
->(packagePath: string, parentTask: ParentTask<T>, isRoot: boolean): Task<T> {
+>(
+  packagePath: string,
+  parentTask: ParentTask<T>,
+  isRoot: boolean,
+): ContextualTask<T> {
   return {
     title: 'Checking if the path is a valid node package',
     task: async (context, task): Promise<void> => {

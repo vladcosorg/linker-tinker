@@ -1,6 +1,6 @@
 import { Command, Flags } from '@oclif/core'
 
-import type { AllContextOptions } from '@/lib/context'
+import type { Context } from '@/lib/context'
 import { enableDebug } from '@/lib/debug'
 
 import type { Interfaces } from '@oclif/core'
@@ -34,7 +34,6 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   public override async init(): Promise<void> {
     await super.init()
 
-    console.log(super.ctor.baseFlags)
     const { args, flags } = await this.parse({
       flags: {
         ...this.ctor.flags,
@@ -55,7 +54,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     return this.flags.verbose || this.flags.debug ? 'simple' : 'default'
   }
 
-  protected createContext<O extends Partial<AllContextOptions>>(context: O) {
+  protected createContext<O extends Partial<Context>>(context: O) {
     return {
       debug: this.flags.debug,
       isExiting: false,
