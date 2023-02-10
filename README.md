@@ -28,12 +28,13 @@ Develop local dependencies in your projects
 ## Quickstart
 
 Install the package globally:
+
 ```bash
 npx install linker-tinker
 ```
 
-
 Run this comand from a directory:
+
 ```bash
 lt sync ../my-dependency
 ```
@@ -51,12 +52,15 @@ You can also install Astro **manually** by running this command instead:
 ```bash
 npm install --save-dev astro
 ```
+
 ## Usage
 
 ```bash
 $ ncc <cmd> <opts>
 ```
+
 Eg:
+
 ```bash
 $ ncc build input.js -o dist
 ```
@@ -70,6 +74,7 @@ Outputs the Node.js compact build of `input.js` into `dist/index.js`.
 > a `"type": "module"` in the package.json file.
 
 #### Commands:
+
 ```
   build <input-file> [opts]
   run <input-file> [opts]
@@ -79,6 +84,7 @@ Outputs the Node.js compact build of `input.js` into `dist/index.js`.
 ```
 
 #### Options:
+
 ```
   -o, --out [dir]          Output directory for build (defaults to dist)
   -m, --minify             Minify output
@@ -118,26 +124,24 @@ also a replacement for other replacement packages which are either not maintaine
 [![License](https://img.shields.io/npm/l/link-and-tink.svg)](https://github.com/oclif/hello-world/blob/main/package.json)
 
 # Features
+
 - Survives npm install
-- All production dependencies and peer dependencies are installed along the main package (unlike npm link) 
-- Automatic reinstall of the changed dependencies 
-- No transitive dependencies 
+- All production dependencies and peer dependencies are installed along the main package (unlike npm link)
+- Automatic reinstall of the changed dependencies
+- No transitive dependencies
 - Works with CRA, Vite, etc. hot reloading / hot module replacement (HMR)
 - Fully automatic syncronisation between your project and linked dependency
 - No 3rd-party config options in your package.json
 - Out of the box support for TypeScript transpiler and other watchers
 - Bidirectional sync
 
-
-
 # Usage
 
 # To Do
+
 - Support other than NPM package managers
 
 # Recipes
-
-
 
 #Comparison table
 

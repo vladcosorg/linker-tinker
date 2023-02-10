@@ -1,8 +1,8 @@
 import chalk from 'chalk'
 
 import { eventBus } from '@/lib/event-emitter'
-import { restoreOriginalVersion } from '@/lib/sync/subtasks/restore-original-version'
 import type { ContextualTaskWithRequired } from '@/lib/tasks'
+import { restoreOriginalVersion } from '@/lib/tasks/sync/restore-original-version'
 
 export function gracefulExitTask(): ContextualTaskWithRequired<
   'dependentPackageName' | 'onlyAttach'

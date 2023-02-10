@@ -1,6 +1,6 @@
-import { checkIfIsValidNodePackageTask } from '@/lib/sync/subtasks/check-if-is-valid-node-package-task'
-import { checkIfThePathExistsTask } from '@/lib/sync/subtasks/check-if-the-path-exists-task'
 import type { ContextualTaskWithRequired } from '@/lib/tasks'
+import { checkIfIsValidNodePackageTask } from '@/lib/tasks/sync/check-if-is-valid-node-package-task'
+import { checkIfThePathExistsTask } from '@/lib/tasks/sync/check-if-the-path-exists-task'
 
 export function verifyDependencyTask(): ContextualTaskWithRequired<
   'dependentPackageName' | 'isExiting' | 'sourcePackagePath'

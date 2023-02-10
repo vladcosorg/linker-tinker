@@ -1,9 +1,9 @@
 import Link from '@/commands/link'
-import { getPackListTask } from '@/lib/sync/subtasks/get-pack-list-task'
-import { gracefulExitTask } from '@/lib/sync/subtasks/graceful-exit-task'
+import { getPackListTask } from '@/lib/tasks/sync/get-pack-list-task'
+import { gracefulExitTask } from '@/lib/tasks/sync/graceful-exit-task'
 import { verifyDependencyTask } from '@/lib/tasks/verify-dependency-task'
 import { verifyTargetTask } from '@/lib/tasks/verify-target-task'
-import { runWatchersTask } from '@/lib/watch/run-watchers-task'
+import { runWatchersTask } from '@/lib/tasks/watch/run-watchers-task'
 import { runTasks } from '@/task-runner'
 
 export default class Watch extends Link {

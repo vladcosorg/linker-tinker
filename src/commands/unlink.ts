@@ -2,9 +2,9 @@ import path from 'node:path'
 
 import { BaseCommand } from '@/lib/base-command'
 import { getInputArgs } from '@/lib/command'
+import { rollBackTask } from '@/lib/tasks/unlink/roll-back-task'
 import { verifyDependencyTask } from '@/lib/tasks/verify-dependency-task'
 import { verifyTargetTask } from '@/lib/tasks/verify-target-task'
-import { rollBackTask } from '@/lib/unlink/roll-back-task'
 import { runTasks } from '@/task-runner'
 
 export default class Unlink extends BaseCommand<typeof Unlink> {

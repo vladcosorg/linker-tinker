@@ -72,7 +72,7 @@
   "oclif": {
     "bin": "linktink",
     "dirname": "linktink",
-    "default": "sync",
+    "default": "link",
     "commands": "./dist/commands",
     "plugins": [
       "@oclif/plugin-help",

@@ -4,8 +4,8 @@ import {
   getActiveRunsForPackage,
   resetActiveRunForPackage,
 } from '@/lib/persistent-storage'
-import { restorePackageOriginalVersion } from '@/lib/sync/subtasks/restore-original-version-package'
 import type { ContextualTaskWithRequired } from '@/lib/tasks'
+import { restorePackageOriginalVersion } from '@/lib/tasks/sync/restore-original-version-package'
 
 export function rollBackTask(): ContextualTaskWithRequired<
   'dependentPackageName' | 'isExiting' | 'targetPackagePath'

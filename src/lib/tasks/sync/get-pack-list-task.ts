@@ -1,6 +1,6 @@
-import { getFallbackPackList } from '@/lib/sync/subtasks/get-fallback-packlist-task'
-import { getGranularPackListTask } from '@/lib/sync/subtasks/get-granular-pack-list-task'
 import type { ContextualTaskWithRequired } from '@/lib/tasks'
+import { getFallbackPackList } from '@/lib/tasks/sync/get-fallback-packlist-task'
+import { getGranularPackListTask } from '@/lib/tasks/sync/get-granular-pack-list-task'
 
 export function getPackListTask(): ContextualTaskWithRequired<
   | 'debug'

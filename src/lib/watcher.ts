@@ -10,8 +10,8 @@ import { deferred } from '@/lib/deferred'
 import { toErrorWithMessage } from '@/lib/error'
 import { removeFileAndContainingDirectoryIfEmpty } from '@/lib/fs'
 import { copyFile, formatPathToRelative, getOppositePath } from '@/lib/misc'
-import { installTheDependentPackageTask } from '@/lib/sync/subtasks/install-dependent-package-task'
 import type { ContextualTask } from '@/lib/tasks'
+import { installTheDependentPackageTask } from '@/lib/tasks/sync/install-dependent-package-task'
 
 import type { ListrTask, ListrTaskWrapper, ListrDefaultRenderer } from 'listr2'
 
