@@ -12,13 +12,14 @@ export default class Unlink extends BaseCommand<typeof Unlink> {
     'Unlink the package and restore to previous state'
 
   static override args = getInputArgs()
+  static override flags = {}
 
   async run(): Promise<void> {
     await runTasks(
       [verifyDependencyTask(), verifyTargetTask(), rollBackTask()],
       {
         renderer: this.getRendererType(),
-        ctx: this.createContext({
+        ctx: await this.createContext({
           sourcePackagePath: path.resolve(this.args.from),
           targetPackagePath: path.resolve(this.args.to),
           dependentPackageName: '',

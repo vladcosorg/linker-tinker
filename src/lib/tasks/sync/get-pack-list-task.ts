@@ -12,7 +12,7 @@ export function getPackListTask(): ContextualTaskWithRequired<
 > {
   return {
     enabled(context) {
-      return !context.isExiting && !context.onlyAttach
+      return !context.isExiting
     },
     title: 'Finding the files for sync',
     task(_context, task): any {

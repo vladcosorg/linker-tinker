@@ -10,8 +10,9 @@ import { deferred } from '@/lib/deferred'
 import { toErrorWithMessage } from '@/lib/error'
 import { removeFileAndContainingDirectoryIfEmpty } from '@/lib/fs'
 import { copyFile, formatPathToRelative, getOppositePath } from '@/lib/misc'
-import type { ContextualTask } from '@/lib/tasks'
-import { installTheDependentPackageTask } from '@/lib/tasks/sync/install-dependent-package-task'
+import type { PickContext } from '@/lib/tasks'
+import { symlinkTask } from '@/lib/tasks/sync/create-symlink'
+import { installDependentPackageTask } from '@/lib/tasks/sync/install-dependent-package-task'
 
 import type { ListrTask, ListrTaskWrapper, ListrDefaultRenderer } from 'listr2'
 
@@ -79,7 +80,7 @@ export function isRecursionEvent(
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function createPendingTaskList() {
-  const taskList = new Listr([], { exitOnError: false })
+  const taskList = new Listr([], { exitOnError: false, concurrent: false })
   let currentPendingTask = createIntermediateTask()
   taskList.add(currentPendingTask.task)
 
@@ -94,7 +95,7 @@ export function createPendingTaskList() {
       currentPendingTask.reject(error)
       currentPendingTask = newPendingTask
     },
-    addNextTask(task: ContextualTask) {
+    addNextTask(task: ListrTask | ListrTask[]) {
       taskList.add(task)
       const newPendingTask = createIntermediateTask()
       taskList.add(newPendingTask.task)
@@ -116,7 +117,14 @@ export async function handleWatcherEvents({
   eventName: string
   pendingTaskList: ReturnType<typeof createPendingTaskList>
   task: ListrTaskWrapper<Context, ListrDefaultRenderer>
-  context: Context
+  context: PickContext<
+    | 'bidirectionalSync'
+    | 'dependentPackageName'
+    | 'intermediateCacheDirectory'
+    | 'noSymlink'
+    | 'sourcePackagePath'
+    | 'targetPackagePath'
+  >
   pendingUpdateLog: string[]
 }): Promise<void> {
   try {
@@ -141,11 +149,12 @@ export async function handleWatcherEvents({
         if (
           path.join(context.sourcePackagePath, 'package.json') === sourcePath
         ) {
-          pendingTaskList.addNextTask(
-            installTheDependentPackageTask(
+          pendingTaskList.addNextTask([
+            installDependentPackageTask(
               'Detected changes in source package.json. Reinstalling the package to pick up possible (peer)dependency changes.',
             ),
-          )
+            symlinkTask(context),
+          ])
         }
 
         task.output = `Copied from ${chalk.blue(

@@ -3,7 +3,7 @@ import { it, vi, expect } from 'vitest'
 import { mockProcessExit } from 'vitest-mock-process'
 
 import Link from '../../src/commands/link'
-import { runNpmReinstall } from '../../src/lib/run'
+import { runNpmInstallRoot } from '../../src/lib/run'
 import { getFsHelpers } from '../unit/helpers'
 import { expectUntil, waitUntiltoHaveBeenCalledWith } from '../util'
 
@@ -38,7 +38,7 @@ it('run full process', async () => {
     },
   })
 
-  await runNpmReinstall(masterDirectory.cwd.path())
+  await runNpmInstallRoot(masterDirectory.cwd.path())
 
   expect(read(masterDirectory.cwd.path(contentFilePath))).toBe('0')
 

@@ -1,3 +1,5 @@
+import path from 'node:path'
+
 import jetpack from 'fs-jetpack'
 import { afterEach } from 'vitest'
 
@@ -40,6 +42,8 @@ export function getFsHelpers() {
       }
 
       const cwd = testTemporaryDirectory.cwd(rootDirectory)
+      // In case we create the same package repeatedly the scope of the same temp dir
+      testTemporaryDirectory.dir(rootDirectory, { empty: true })
 
       for (const [file, content] of Object.entries(files)) {
         cwd.file(file, {
@@ -54,4 +58,11 @@ export function getFsHelpers() {
     },
     temporaryCwd: testTemporaryDirectory,
   }
+}
+
+export function readPackageJson(packageDirectory: string): Record<string, any> {
+  return jetpack.read(
+    path.join(packageDirectory, 'package.json'),
+    'json',
+  ) as unknown as { version: string }
 }

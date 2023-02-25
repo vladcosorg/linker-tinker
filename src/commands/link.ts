@@ -5,13 +5,16 @@ import chalk from 'chalk'
 
 import { BaseCommand } from '@/lib/base-command'
 import { getInputArgs } from '@/lib/command'
+import { runRollbackTasks } from '@/lib/tasks/run-rollback-tasks'
 import { backupInstalledVersion } from '@/lib/tasks/sync/backup-installed-version'
+import { checkIntegrityIssues } from '@/lib/tasks/sync/check-integrity-issues'
 import { createIntermediatePackageTask } from '@/lib/tasks/sync/create-intermediate-package-task'
-import { createSymlinkTask } from '@/lib/tasks/sync/create-symlink'
+import { symlinkTask } from '@/lib/tasks/sync/create-symlink'
 import { getPackListTask } from '@/lib/tasks/sync/get-pack-list-task'
 import { initializeStorageTask } from '@/lib/tasks/sync/initialize-storage-task'
-import { installTheDependentPackageTask } from '@/lib/tasks/sync/install-dependent-package-task'
-import { startBackgroundWatcher } from '@/lib/tasks/sync/start-background-watcher'
+import { installDependentPackageTask } from '@/lib/tasks/sync/install-dependent-package-task'
+import { restoreOriginalVersion } from '@/lib/tasks/sync/restore-original-version'
+import { startWatcher } from '@/lib/tasks/sync/start-watcher'
 import { verifyDependencyTask } from '@/lib/tasks/verify-dependency-task'
 import { verifyTargetTask } from '@/lib/tasks/verify-target-task'
 import { runTasks } from '@/task-runner'
@@ -31,6 +34,11 @@ export default class Link extends BaseCommand<typeof Link> {
     noSymlink: Flags.boolean({
       char: 'n',
       description: 'Do not use symlink',
+      default: false,
+    }),
+    foregroundWatcher: Flags.boolean({
+      char: 'f',
+      description: 'Run foreground watcher',
       default: false,
     }),
     bidirectionalSync: Flags.boolean({
@@ -61,25 +69,28 @@ export default class Link extends BaseCommand<typeof Link> {
 
   async run(): Promise<void> {
     await runTasks(
-      [
+      (context) => [
         verifyDependencyTask(),
         verifyTargetTask(),
+        checkIntegrityIssues(),
         initializeStorageTask(),
         backupInstalledVersion(),
         getPackListTask(),
         createIntermediatePackageTask(),
-        installTheDependentPackageTask(),
-        createSymlinkTask(),
-        startBackgroundWatcher(),
+        installDependentPackageTask(),
+        symlinkTask(context),
+        startWatcher(),
+        restoreOriginalVersion(),
+        runRollbackTasks(),
       ],
-      this.getOptions(),
+      await this.getOptions(),
     )
   }
 
-  protected getOptions() {
+  protected async getOptions() {
     return {
       renderer: this.getRendererType(),
-      ctx: this.createContext({
+      ctx: await this.createContext({
         skipWatch: this.flags.skipWatch,
         noSymlink: this.flags.noSymlink,
         sourcePackagePath: path.resolve(this.args.from),
@@ -90,6 +101,7 @@ export default class Link extends BaseCommand<typeof Link> {
         watchAll: this.flags.watchAll,
         pendingBidirectionalUpdates: { fromSource: [], toSource: [] },
         dependentPackageName: '',
+        foregroundWatcher: this.flags.foregroundWatcher,
         onlyAttach: false,
       }),
     }

@@ -9,8 +9,9 @@ export function initializeStorageTask(): ContextualTaskWithRequired<
       return !context.isExiting
     },
     title: 'Initialise storage',
-    task: (context) => {
-      registerNewActiveRun(context)
+    task: async (context) => {
+
+      await registerNewActiveRun(context)
     },
   }
 }

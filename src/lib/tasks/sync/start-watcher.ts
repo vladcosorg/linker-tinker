@@ -1,12 +1,15 @@
+import { launchBackgroundWatcher } from '@/lib/pm2'
 import type { ContextualTaskWithRequired } from '@/lib/tasks'
 import { maybeRunDependencyWatcherTask } from '@/lib/tasks/sync/maybe-run-dependency-watcher-task'
 import { startReverseWatcherTask } from '@/lib/tasks/sync/start-reverse-watcher-task'
 import { startWatcherTask } from '@/lib/tasks/sync/start-watcher-task'
 import { watchUnlinksTask } from '@/lib/tasks/watch/watch-unlinks-task'
 
-export function runWatchersTask(): ContextualTaskWithRequired<
+export function startWatcher(): ContextualTaskWithRequired<
   | 'bidirectionalSync'
   | 'debug'
+  | 'dependentPackageName'
+  | 'foregroundWatcher'
   | 'isExiting'
   | 'onlyAttach'
   | 'pendingBidirectionalUpdates'
@@ -18,12 +21,20 @@ export function runWatchersTask(): ContextualTaskWithRequired<
   | 'watchAll'
 > {
   return {
-    // enabled(context) {
-    //   return !context.skipWatch && !context.isExiting && !context.onlyAttach
+    // enabled: async (context) => {
+    //   const isWatcherAlreadyRunning = await isWatcherRunningForPackage(
+    //     context.dependentPackageName,
+    //   )
+    //   return !isWatcherAlreadyRunning
     // },
-    title: 'Running watchers',
-    task: (_context, task): any => {
-      console.log('aaaaa')
+    title: 'Starting watcher',
+    task: async (context, task) => {
+      if (!context.foregroundWatcher) {
+        task.title += ' [in background]'
+        return launchBackgroundWatcher(context.dependentPackageName)
+      }
+
+      task.title += ' [in foreground]'
       return task.newListr(
         [
           watchUnlinksTask(),
@@ -32,7 +43,7 @@ export function runWatchersTask(): ContextualTaskWithRequired<
           maybeRunDependencyWatcherTask(),
         ],
         {
-          concurrent: false,
+          concurrent: true,
         },
       )
     },

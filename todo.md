@@ -12,3 +12,4 @@
 - Handle external SIGINT
 - Add option to not modify packag.json
 - Add option to restore EXACT version if modifying pacckage.json
+- Detect when npm install creates a nested node_modules in the dependency package

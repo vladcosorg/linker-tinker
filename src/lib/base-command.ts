@@ -2,16 +2,17 @@ import { Command, Flags } from '@oclif/core'
 
 import type { Context } from '@/lib/context'
 import { enableDebug } from '@/lib/debug'
+import { getGlobalCacheDirectory } from '@/lib/fs'
 
 import type { Interfaces } from '@oclif/core'
 import type { ListrRendererValue } from 'listr2'
+import type { AsyncReturnType } from 'type-fest'
 
 export type Flags<T extends typeof Command> = Interfaces.InferredFlags<
   (typeof BaseCommand)['baseFlags'] & T['flags']
 >
 // eslint-disable-next-line unicorn/prevent-abbreviations
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>
-
 export abstract class BaseCommand<T extends typeof Command> extends Command {
   // define flags that can be inherited by any command that extends BaseCommand
   static override baseFlags = {
@@ -54,10 +55,24 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     return this.flags.verbose || this.flags.debug ? 'simple' : 'default'
   }
 
-  protected createContext<O extends Partial<Context>>(context: O) {
+  private async getContextDefaults<C extends Context>(): Promise<C> {
+    const intermediateCacheDirectory = await getGlobalCacheDirectory(
+      'linker-tinker',
+    )
     return {
       debug: this.flags.debug,
       isExiting: false,
+      intermediateCacheDirectory,
+      rollbackQueue: [],
+    } as C
+  }
+
+  protected async createContext<O extends Partial<Context>>(
+    context: O,
+  ): Promise<AsyncReturnType<typeof this.getContextDefaults> & O> {
+    const defaults = await this.getContextDefaults()
+    return {
+      ...defaults,
       ...context,
     }
   }

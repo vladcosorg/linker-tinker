@@ -6,16 +6,16 @@ import type { dependencyTypes as dependencyTypeList } from '@/lib/misc'
 
 import type { ExecaChildProcess } from 'execa'
 
-const cancellableExeca = function (...parameters: Parameters<typeof execa>) {
+const cancellableExeca = async function (
+  ...parameters: Parameters<typeof execa>
+) {
   debugConsole.log(parameters)
   const child = execa(...(parameters as Parameters<typeof execa>))
   eventBus.on('exitImmediately', () => {
     child.cancel()
   })
-  void child.then((result) => {
-    debugConsole.log(result.command)
-    return result
-  })
+  const result = await child
+  debugConsole.log(result.command)
   return child
 } as unknown as typeof execa
 
@@ -97,14 +97,19 @@ export function runNpmLink(
 export function runNpmUninstall(
   rootPackagePath: string,
   dependencyName: string,
+  save = true,
 ): ExecaChildProcess {
-  return cancellableExeca('npm', ['uninstall', dependencyName, '--save'], {
-    cwd: rootPackagePath,
-    all: true,
-  })
+  return cancellableExeca(
+    'npm',
+    ['uninstall', dependencyName, save ? '--save' : '--no-save'],
+    {
+      cwd: rootPackagePath,
+      all: true,
+    },
+  )
 }
 
-export function runNpmReinstall(rootPackagePath: string): ExecaChildProcess {
+export function runNpmInstallRoot(rootPackagePath: string): ExecaChildProcess {
   return cancellableExeca(
     'npm',
     ['install', '--no-audit', '--no-fund', '--ignore-scripts'],

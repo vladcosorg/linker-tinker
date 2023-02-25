@@ -4,8 +4,6 @@ import { copy } from 'fs-extra'
 import jetpack from 'fs-jetpack'
 import { pick } from 'lodash'
 
-import { getGlobalCacheDirectory } from '@/lib/fs'
-
 import type { Entries } from 'type-fest'
 
 export const dependencyTypes = ['dependencies', 'devDependencies'] as const
@@ -115,6 +113,13 @@ function getInstalledPathFromSourcePath(
   )
 }
 
+export function assembleInstalledPath(
+  rootPackagePath: string,
+  dependentPackageName: string,
+): string {
+  return path.join(rootPackagePath, 'node_modules', dependentPackageName)
+}
+
 function getSourcePathFromInstalledPath(
   installedPath: string,
   dependentPackagePath: string,
@@ -171,8 +176,9 @@ export function formatPathToRelative(
   return `./${path.relative(path.join(rootPath, '..'), relativePath)}`
 }
 
-export async function getIntermediatePath(
+export function getIntermediatePath(
   packageName: string,
-): Promise<string> {
-  return path.join(await getGlobalCacheDirectory('linker-tinker'), packageName)
+  cacheDirectory: string,
+): string {
+  return path.join(cacheDirectory, packageName)
 }

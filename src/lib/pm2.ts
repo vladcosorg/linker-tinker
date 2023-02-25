@@ -35,7 +35,9 @@ export async function isWatcherRunningForPackage(
   packageName: string,
 ): Promise<boolean> {
   const runningWatchers = await getRunningWatchers()
-  return runningWatchers.some((app) => app.name === packageName)
+  return runningWatchers.some(
+    (app) => app.name === packageName && app.pm2_env?.status === 'online',
+  )
 }
 
 export async function launchBackgroundWatcher(
@@ -55,6 +57,7 @@ export async function launchBackgroundWatcher(
         output: path.resolve('./log.log'),
         // env: { pm_out_log_path: './log.log' },
         interpreter_args: [],
+        autorestart: false,
       }
       debugConsole.info('Background process start options', options)
       pm2.start(options, (error) => {

@@ -76,3 +76,6 @@ export async function waitUntiltoHaveBeenCalledWith(
     expect(spy).toHaveBeenCalledWith(...expectedCallArguments)
   }
 }
+
+export const delay = async (t: number) =>
+  new Promise((resolve) => setTimeout(resolve, t))

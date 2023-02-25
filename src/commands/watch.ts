@@ -1,6 +1,5 @@
 import Link from '@/commands/link'
 import { getPackListTask } from '@/lib/tasks/sync/get-pack-list-task'
-import { gracefulExitTask } from '@/lib/tasks/sync/graceful-exit-task'
 import { verifyDependencyTask } from '@/lib/tasks/verify-dependency-task'
 import { verifyTargetTask } from '@/lib/tasks/verify-target-task'
 import { runWatchersTask } from '@/lib/tasks/watch/run-watchers-task'
@@ -14,9 +13,8 @@ export default class Watch extends Link {
         verifyTargetTask(),
         getPackListTask(),
         runWatchersTask(),
-        gracefulExitTask(),
       ],
-      this.getOptions(),
+      await this.getOptions(),
     )
   }
 }

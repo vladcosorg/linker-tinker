@@ -2,7 +2,7 @@ import execa from 'execa'
 import fs from 'fs-jetpack'
 import { expect, it } from 'vitest'
 
-import { runNpmReinstall } from '../../src/lib/run'
+import { runNpmInstallRoot } from '../../src/lib/run'
 import { getFsHelpers } from '../unit/helpers'
 import { expectUntil } from '../util'
 
@@ -18,7 +18,7 @@ it('Runnin two syncs should not mess with each other', async () => {
 
   const masterDirectory = createPackage()
 
-  await runNpmReinstall(masterDirectory.cwd.path())
+  await runNpmInstallRoot(masterDirectory.cwd.path())
 
   const firstChild = execa('./bin/dev', [
     'sync',

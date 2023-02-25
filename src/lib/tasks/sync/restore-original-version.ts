@@ -7,8 +7,13 @@ import type { ContextualTaskWithRequired } from '@/lib/tasks'
 
 import type { ExecaChildProcess } from 'execa'
 
-export function restoreOriginalVersion(): ContextualTaskWithRequired<'dependentPackageName'> {
+export function restoreOriginalVersion(): ContextualTaskWithRequired<
+  'dependentPackageName' | 'onlyAttach'
+> {
   return {
+    enabled(context) {
+      return !context.onlyAttach
+    },
     title: 'Restoring original version',
     task: async (context, task): Promise<void> => {
       const runs = getActiveRunsForPackage(context.dependentPackageName)

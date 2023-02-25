@@ -7,7 +7,8 @@ import { eventBus } from '@/lib/event-emitter'
 import type { dependencyTypes as dependencyTypeList } from '@/lib/misc'
 import { getInstalledPackageConfiguration } from '@/lib/misc'
 
-function createOrGetPersistentStorage() {
+let singletonStorage: ReturnType<typeof createPersistentStorage>
+export function createPersistentStorage(cwd?: string) {
   return new Conf<{
     activeRuns: Record<
       string,
@@ -20,6 +21,7 @@ function createOrGetPersistentStorage() {
       >
     >
   }>({
+    cwd,
     projectName: 'linker-tinker',
     schema: {
       activeRuns: {
@@ -36,6 +38,18 @@ function createOrGetPersistentStorage() {
   })
 }
 
+export function reloadPersistentStorage() {
+  singletonStorage = createPersistentStorage()
+}
+
+export function createOrGetPersistentStorage(cwd?: string) {
+  if (!singletonStorage) {
+    singletonStorage = createPersistentStorage(cwd)
+  }
+
+  return singletonStorage
+}
+
 function handleExit(dependentPackageName: string) {
   resetActiveRunsForPackage(dependentPackageName)
   debugConsole.log(
@@ -45,7 +59,7 @@ function handleExit(dependentPackageName: string) {
 
 function getAllActiveRuns() {
   const storage = createOrGetPersistentStorage()
-  return storage.get('activeRuns')
+  return storage.get('activeRuns', {})
 }
 
 export function getActiveRunsForPackage(dependencyPackage: string) {
@@ -77,11 +91,14 @@ export function resetActiveRunForPackage(
   })
 }
 
-export function registerNewActiveRun(
-  context: RequiredContext<'dependentPackageName' | 'onlyAttach'>,
-): void {
+export async function registerNewActiveRun(
+  context: RequiredContext<
+    'dependentPackageName' | 'foregroundWatcher' | 'onlyAttach'
+  >,
+): Promise<void> {
   const storage = createOrGetPersistentStorage()
-  const runs = storage.get('activeRuns', {})
+
+  const runs = getAllActiveRuns()
   if (runs.hasOwnProperty(context.dependentPackageName)) {
     context.onlyAttach = true
   } else {
@@ -104,10 +121,17 @@ export async function attachActiveRun({
 >): Promise<void> {
   const storage = createOrGetPersistentStorage()
 
-  const packageConfig = await getInstalledPackageConfiguration(
+  let packageConfig = await getInstalledPackageConfiguration(
     dependentPackageName,
     targetPackagePath,
   )
+
+  if (
+    typeof packageConfig?.versionRange === 'string' &&
+    packageConfig.versionRange.startsWith('file:')
+  ) {
+    packageConfig = undefined
+  }
 
   storage.set(
     'activeRuns',

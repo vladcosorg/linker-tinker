@@ -8,11 +8,15 @@ import type { ContextualTaskWithRequired } from '@/lib/tasks'
 import { restorePackageOriginalVersion } from '@/lib/tasks/sync/restore-original-version-package'
 
 export function rollBackTask(): ContextualTaskWithRequired<
-  'dependentPackageName' | 'isExiting' | 'targetPackagePath'
+  | 'dependentPackageName'
+  | 'foregroundWatcher'
+  | 'isExiting'
+  | 'onlyAttach'
+  | 'targetPackagePath'
 > {
   return {
     enabled(context) {
-      return !context.isExiting
+      return !context.onlyAttach
     },
 
     task(context, task): any {
@@ -21,6 +25,7 @@ export function rollBackTask(): ContextualTaskWithRequired<
       )}`
 
       const runs = getActiveRunsForPackage(context.dependentPackageName)
+      console.log(runs)
       if (!runs) {
         throw new Error(
           `The dependency package [${context.dependentPackageName}] is not registered`,
