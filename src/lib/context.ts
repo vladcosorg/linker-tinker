@@ -1,4 +1,4 @@
-import type { ContextualTask } from '@/lib/tasks'
+import type { ListrTask } from 'listr2'
 
 export interface Context {
   sourcePackagePath: string
@@ -16,7 +16,7 @@ export interface Context {
   dependentPackageName: string
   onlyAttach: boolean
   foregroundWatcher: boolean
-  rollbackQueue: ContextualTask[]
+  rollbackQueue: ListrTask[]
 }
 
 export type RequiredContext<T extends keyof Context> = Required<

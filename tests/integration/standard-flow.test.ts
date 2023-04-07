@@ -3,7 +3,7 @@ import { it, vi, expect } from 'vitest'
 import { mockProcessExit } from 'vitest-mock-process'
 
 import Link from '../../src/commands/link'
-import { runNpmInstallRoot } from '../../src/lib/run'
+import { runNpmInstallRoot } from '../../src/lib/executor'
 import { getFsHelpers } from '../unit/helpers'
 import { expectUntil, waitUntiltoHaveBeenCalledWith } from '../util'
 

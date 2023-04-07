@@ -1,17 +1,19 @@
 import { registerNewActiveRun } from '@/lib/persistent-storage'
-import type { ContextualTaskWithRequired } from '@/lib/tasks'
+import type { PickContext } from '@/lib/tasks'
+import { createTask } from '@/lib/tasks'
 
-export function initializeStorageTask(): ContextualTaskWithRequired<
-  'dependentPackageName' | 'isExiting' | 'onlyAttach'
-> {
-  return {
-    enabled(context) {
+export const initializeStorageTask = createTask(
+  (
+    context: PickContext<
+      'dependentPackageName' | 'foregroundWatcher' | 'isExiting' | 'onlyAttach'
+    >,
+  ) => ({
+    enabled() {
       return !context.isExiting
     },
     title: 'Initialise storage',
-    task: async (context) => {
-
-      await registerNewActiveRun(context)
+    task() {
+      registerNewActiveRun(context)
     },
-  }
-}
+  }),
+)

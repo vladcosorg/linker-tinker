@@ -1,12 +1,12 @@
-import type { ContextualTaskWithRequired } from '@/lib/tasks'
+import type { PickContext } from '@/lib/tasks'
+import { createTask } from '@/lib/tasks'
 
-export function runRollbackTasks(): ContextualTaskWithRequired<'rollbackQueue'> {
-  return {
-    enabled(context) {
-      return context.rollbackQueue.length > 0
-    },
-    title: 'Running rollback tasks',
-    task: async (context, task): Promise<void> =>
-      task.newListr(context.rollbackQueue),
-  }
-}
+export const runRollbackTasks = createTask(() => ({
+  title: 'Running rollback tasks',
+  enabled(context: PickContext<'rollbackQueue'>) {
+    return context.rollbackQueue.length > 0
+  },
+  task(context: PickContext<'rollbackQueue'>, task) {
+    return task.newListr(context.rollbackQueue)
+  },
+}))

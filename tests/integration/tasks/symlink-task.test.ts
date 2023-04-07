@@ -2,6 +2,8 @@ import jetpack from 'fs-jetpack'
 import { Listr } from 'listr2'
 import { expect, test } from 'vitest'
 
+import type { Context } from '@/lib/context'
+
 import { assembleInstalledPath } from '../../../src/lib/misc'
 import { symlinkTask } from '../../../src/lib/tasks/sync/create-symlink'
 import { getFsHelpers } from '../../unit/helpers'
@@ -32,7 +34,7 @@ test('A symlink is created in place of the installed package', async () => {
     dependentPackageName: dependencyPackage.packageName,
     noSymlink: false,
     intermediateCacheDirectory: dependencyPackage.cwd.path(),
-  }
+  } satisfies Partial<Context>
 
   const installedPath = assembleInstalledPath(
     rootPackage.cwd.path(),

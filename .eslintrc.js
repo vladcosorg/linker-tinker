@@ -22,6 +22,10 @@ module.exports = defineConfig({
         'no-console': 'off',
         'no-process-exit': 'off',
         'unicorn/no-process-exit': 'off',
+        '@typescript-eslint/no-inferrable-types': [
+          'error',
+          { ignoreParameters: true },
+        ],
       },
       parser: '@typescript-eslint/parser',
       parserOptions: {

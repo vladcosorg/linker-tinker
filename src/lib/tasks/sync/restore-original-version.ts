@@ -1,21 +1,20 @@
+import { runNpmInstall, runNpmUninstall } from '@/lib/executor'
 import {
   getActiveRunsForPackage,
   resetActiveRunsForPackage,
 } from '@/lib/persistent-storage'
-import { runNpmInstall, runNpmUninstall } from '@/lib/run'
-import type { ContextualTaskWithRequired } from '@/lib/tasks'
+import type { PickContext } from '@/lib/tasks'
+import { createTask } from '@/lib/tasks'
 
 import type { ExecaChildProcess } from 'execa'
 
-export function restoreOriginalVersion(): ContextualTaskWithRequired<
-  'dependentPackageName' | 'onlyAttach'
-> {
-  return {
-    enabled(context) {
+export const restoreOriginalVersion = createTask(
+  (context: PickContext<'dependentPackageName' | 'onlyAttach'>) => ({
+    enabled() {
       return !context.onlyAttach
     },
     title: 'Restoring original version',
-    task: async (context, task): Promise<void> => {
+    task: async (_, task): Promise<void> => {
       const runs = getActiveRunsForPackage(context.dependentPackageName)
       if (!runs) {
         return
@@ -38,5 +37,5 @@ export function restoreOriginalVersion(): ContextualTaskWithRequired<
       await Promise.all(commandPromises)
       resetActiveRunsForPackage(context.dependentPackageName)
     },
-  }
-}
+  }),
+)

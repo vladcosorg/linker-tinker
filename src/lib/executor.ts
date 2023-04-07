@@ -1,4 +1,5 @@
 import execa from 'execa'
+import { createPromiseMixin } from 'promise-supplement'
 
 import { debugConsole } from '@/lib/debug'
 import { eventBus } from '@/lib/event-emitter'
@@ -6,18 +7,81 @@ import type { dependencyTypes as dependencyTypeList } from '@/lib/misc'
 
 import type { ExecaChildProcess } from 'execa'
 
-const cancellableExeca = async function (
+export const cancellableExeca = function (
   ...parameters: Parameters<typeof execa>
 ) {
   debugConsole.log(parameters)
-  const child = execa(...(parameters as Parameters<typeof execa>))
-  eventBus.on('exitImmediately', () => {
+
+  const originalChild = execa(...(parameters as Parameters<typeof execa>))
+  const child = createPromiseMixin(originalChild.then(), originalChild)
+
+  const cancelHandler = () => {
     child.cancel()
-  })
-  const result = await child
-  debugConsole.log(result.command)
-  return child
+  }
+
+  eventBus.once('exitImmediately', cancelHandler)
+
+  return (
+    child
+      .then((result) => {
+        debugConsole.log(result.command)
+        return result
+      })
+      // .catch((error) => {
+      //   debugConsole.log(error)
+      //   throw error
+      // })
+      .finally(() => {
+        eventBus.removeListener('exitImmediately', cancelHandler)
+      })
+  )
+
+  // void (async () => {
+  //   try {
+  //     const result = await child
+  //     debugConsole.log(result.command)
+  //   } catch (error) {
+  //     debugConsole.log(error)
+  //   } finally {
+  //     eventBus.removeListener('exitImmediately', cancelHandler)
+  //   }
+  // })()
 } as unknown as typeof execa
+
+const activeProcesses: Record<string, ExecaChildProcess> = {}
+
+export function abortableExeca(
+  id: string,
+  command: string,
+  commandArguments?: readonly string[],
+  options?: execa.Options,
+) {
+  if (id in activeProcesses) {
+    activeProcesses[id]?.cancel()
+    delete activeProcesses[id]
+  }
+
+  // console.log(
+  //   'aaa1',
+  //   util.inspect(promise, { depth: 1, colors: true }),
+  //   util.inspect(promise.then(), { depth: 1, colors: true }),
+  // )
+
+  const promise = cancellableExeca(command, commandArguments, {
+    ...options,
+  })
+
+  promise.catch((error) => {
+    if (!error.isCanceled) {
+      throw error
+    }
+
+    return error
+  })
+
+  activeProcesses[id] = promise
+  return promise
+}
 
 export type PackageConfig = {
   dependencyType?: (typeof dependencyTypeList)[number]

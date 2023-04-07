@@ -1,5 +1,5 @@
-import type { PackageConfig } from '@/lib/run'
-import { runNpmInstall, runNpmUninstall } from '@/lib/run'
+import type { PackageConfig } from '@/lib/executor'
+import { runNpmInstall, runNpmUninstall } from '@/lib/executor'
 import type { ContextualTaskWithRequired } from '@/lib/tasks'
 
 export function restorePackageOriginalVersion(

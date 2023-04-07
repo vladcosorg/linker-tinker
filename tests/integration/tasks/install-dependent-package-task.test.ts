@@ -25,14 +25,14 @@ it('should update the dependent package transitive dependency when already insta
     },
   })
 
-  const listr = new Listr(installDependentPackageTask(), {
-    ctx: {
-      dependentPackageName: 'secondary',
-      targetPackagePath: primaryPackage.cwd.path(),
-      isExiting: false,
-      intermediateCacheDirectory: temporaryCwd.path(),
-    },
-  })
+  const subcontext = {
+    dependentPackageName: 'secondary',
+    targetPackagePath: primaryPackage.cwd.path(),
+    isExiting: false,
+    intermediateCacheDirectory: temporaryCwd.path(),
+  }
+
+  const listr = new Listr(installDependentPackageTask(subcontext))
 
   await listr.run()
 

@@ -2,24 +2,26 @@ import path from 'node:path'
 
 import jetpack from 'fs-jetpack'
 
+import { runNpmInstall, runNpmUninstall } from '@/lib/executor'
 import { getIntermediatePath } from '@/lib/misc'
-import { runNpmInstall, runNpmUninstall } from '@/lib/run'
-import type { ContextualTaskWithRequired } from '@/lib/tasks'
+import type { PickContext } from '@/lib/tasks'
+import { createTask } from '@/lib/tasks'
 
-export function installDependentPackageTask(
-  title = 'Installing the package',
-): ContextualTaskWithRequired<
-  | 'dependentPackageName'
-  | 'intermediateCacheDirectory'
-  | 'isExiting'
-  | 'targetPackagePath'
-> {
-  return {
-    enabled(context) {
+export const installDependentPackageTask = createTask(
+  (
+    context: PickContext<
+      | 'dependentPackageName'
+      | 'intermediateCacheDirectory'
+      | 'isExiting'
+      | 'targetPackagePath'
+    >,
+    title: string = 'Installing the package',
+  ) => ({
+    enabled() {
       return !context.isExiting
     },
     title,
-    task: async (context, task): Promise<void> => {
+    task: async (_, task): Promise<void> => {
       if (
         jetpack.exists(
           path.join(
@@ -49,5 +51,5 @@ export function installDependentPackageTask(
 
       await process
     },
-  }
-}
+  }),
+)

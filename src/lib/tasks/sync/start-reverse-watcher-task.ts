@@ -2,28 +2,31 @@ import { watch } from 'chokidar'
 
 import { eventBus } from '@/lib/event-emitter'
 import { getInstalledDependencyPath } from '@/lib/misc'
-import type { ContextualTaskWithRequired } from '@/lib/tasks'
+import type { PickContext } from '@/lib/tasks'
+import { createTask } from '@/lib/tasks'
 import {
   createPendingTaskList,
   handleWatcherEvents,
   isRecursionEvent,
 } from '@/lib/watcher'
 
-export function startReverseWatcherTask(): ContextualTaskWithRequired<
-  | 'bidirectionalSync'
-  | 'pendingBidirectionalUpdates'
-  | 'sourcePackagePath'
-  | 'targetPackagePath'
-> {
-  return {
-    enabled(context) {
+export const startReverseWatcherTask = createTask(
+  (
+    context: PickContext<
+      | 'bidirectionalSync'
+      | 'pendingBidirectionalUpdates'
+      | 'sourcePackagePath'
+      | 'targetPackagePath'
+    >,
+  ) => ({
+    enabled() {
       return context.bidirectionalSync
     },
     options: {
       bottomBar: 5,
     },
     title: 'Starting reverse-direction watcher [EXPERIMENTAL]',
-    task: async (context, task) => {
+    task: async (_, task) => {
       const pendingTaskList = createPendingTaskList()
 
       const watcher = watch(
@@ -65,5 +68,5 @@ export function startReverseWatcherTask(): ContextualTaskWithRequired<
 
       return pendingTaskList.taskList
     },
-  }
-}
+  }),
+)

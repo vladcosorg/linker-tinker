@@ -8,20 +8,26 @@ import {
   reloadPersistentStorage,
   resetActiveRunsForPackage,
 } from '@/lib/persistent-storage'
-import type { ContextualTaskWithRequired } from '@/lib/tasks'
+import type { PickContext } from '@/lib/tasks'
+import { createTask } from '@/lib/tasks'
 
-export function watchUnlinksTask(): ContextualTaskWithRequired<
-  'dependentPackageName' | 'isExiting' | 'targetPackagePath'
-> {
-  return {
+export const watchUnlinksTask = createTask(
+  (
+    context: PickContext<
+      | 'dependentPackageName'
+      | 'foregroundWatcher'
+      | 'isExiting'
+      | 'targetPackagePath'
+    >,
+  ) => ({
     options: {
       bottomBar: 5,
     },
-    enabled(context) {
-      return !context.isExiting
+    enabled() {
+      return !context.isExiting && !context.foregroundWatcher
     },
     title: 'Watching configuration changes',
-    async task(context) {
+    async task() {
       const def = deferred()
       debugConsole.log('Starting watching configuration changes')
       debugConsole.log(
@@ -50,5 +56,5 @@ export function watchUnlinksTask(): ContextualTaskWithRequired<
 
       return def.promise
     },
-  }
-}
+  }),
+)

@@ -5,17 +5,18 @@ import { debug } from 'oclif/lib/log'
 import { terminate } from '@/lib/child-process'
 import { PrematureExitError } from '@/lib/error'
 import { eventBus } from '@/lib/event-emitter'
-import type { ContextualTaskWithRequired } from '@/lib/tasks'
+import type { PickContext } from '@/lib/tasks'
+import { createTask } from '@/lib/tasks'
 
-export function maybeRunDependencyWatcherTask(): ContextualTaskWithRequired<
-  'debug' | 'runWatcherScript' | 'sourcePackagePath'
-> {
-  return {
-    enabled(context) {
+export const maybeRunDependencyWatcherTask = createTask(
+  (
+    context: PickContext<'debug' | 'runWatcherScript' | 'sourcePackagePath'>,
+  ) => ({
+    title: 'Running dependency command',
+    enabled() {
       return context.runWatcherScript !== undefined
     },
-    title: 'Running dependency command',
-    task: async (context, task): Promise<void> => {
+    async task(_, task) {
       if (!context.runWatcherScript) {
         return
       }
@@ -63,5 +64,5 @@ export function maybeRunDependencyWatcherTask(): ContextualTaskWithRequired<
         throw error
       }
     },
-  }
-}
+  }),
+)

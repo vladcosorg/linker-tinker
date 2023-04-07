@@ -2,7 +2,8 @@ import { watch } from 'chokidar'
 
 import { eventBus } from '@/lib/event-emitter'
 import { getPackList } from '@/lib/packlist'
-import type { ContextualTaskWithRequired } from '@/lib/tasks'
+import type { PickContext } from '@/lib/tasks'
+import { createTask } from '@/lib/tasks'
 import {
   createPendingTaskList,
   handleWatcherEvents,
@@ -10,19 +11,21 @@ import {
   isRecursionEvent,
 } from '@/lib/watcher'
 
-export function startWatcherTask(): ContextualTaskWithRequired<
-  | 'bidirectionalSync'
-  | 'pendingBidirectionalUpdates'
-  | 'sourcePackagePath'
-  | 'syncPaths'
-  | 'watchAll'
-> {
-  return {
+export const startWatcherTask = createTask(
+  (
+    context: PickContext<
+      | 'bidirectionalSync'
+      | 'pendingBidirectionalUpdates'
+      | 'sourcePackagePath'
+      | 'syncPaths'
+      | 'watchAll'
+    >,
+  ) => ({
     options: {
       bottomBar: 5,
     },
     title: 'Starting watching the files',
-    task: (context, task) => {
+    task: (_, task) => {
       const pendingTaskList = createPendingTaskList()
 
       const watcher = watch(context.sourcePackagePath, {
@@ -75,5 +78,5 @@ export function startWatcherTask(): ContextualTaskWithRequired<
 
       return pendingTaskList.taskList
     },
-  }
-}
+  }),
+)

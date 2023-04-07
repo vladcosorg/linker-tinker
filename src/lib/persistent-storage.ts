@@ -1,11 +1,11 @@
 import Conf from 'conf'
 import { merge, omit } from 'lodash'
 
-import type { RequiredContext } from '@/lib/context'
 import { debugConsole } from '@/lib/debug'
 import { eventBus } from '@/lib/event-emitter'
 import type { dependencyTypes as dependencyTypeList } from '@/lib/misc'
 import { getInstalledPackageConfiguration } from '@/lib/misc'
+import type { PickContext } from '@/lib/tasks'
 
 let singletonStorage: ReturnType<typeof createPersistentStorage>
 export function createPersistentStorage(cwd?: string) {
@@ -91,11 +91,11 @@ export function resetActiveRunForPackage(
   })
 }
 
-export async function registerNewActiveRun(
-  context: RequiredContext<
+export function registerNewActiveRun(
+  context: PickContext<
     'dependentPackageName' | 'foregroundWatcher' | 'onlyAttach'
   >,
-): Promise<void> {
+): void {
   const storage = createOrGetPersistentStorage()
 
   const runs = getAllActiveRuns()
@@ -116,9 +116,7 @@ export async function registerNewActiveRun(
 export async function attachActiveRun({
   dependentPackageName,
   targetPackagePath,
-}: RequiredContext<
-  'dependentPackageName' | 'targetPackagePath'
->): Promise<void> {
+}: PickContext<'dependentPackageName' | 'targetPackagePath'>): Promise<void> {
   const storage = createOrGetPersistentStorage()
 
   let packageConfig = await getInstalledPackageConfiguration(

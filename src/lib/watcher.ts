@@ -121,6 +121,7 @@ export async function handleWatcherEvents({
     | 'bidirectionalSync'
     | 'dependentPackageName'
     | 'intermediateCacheDirectory'
+    | 'isExiting'
     | 'noSymlink'
     | 'sourcePackagePath'
     | 'targetPackagePath'
@@ -151,6 +152,7 @@ export async function handleWatcherEvents({
         ) {
           pendingTaskList.addNextTask([
             installDependentPackageTask(
+              context,
               'Detected changes in source package.json. Reinstalling the package to pick up possible (peer)dependency changes.',
             ),
             symlinkTask(context),

@@ -3,25 +3,28 @@ import path from 'node:path'
 import jetpack from 'fs-jetpack'
 
 import { getIntermediatePath } from '@/lib/misc'
-import type { ContextualTaskWithRequired } from '@/lib/tasks'
+import type { PickContext } from '@/lib/tasks'
+import { createTask } from '@/lib/tasks'
 
-export function createIntermediatePackageTask(): ContextualTaskWithRequired<
-  | 'dependentPackageName'
-  | 'intermediateCacheDirectory'
-  | 'isExiting'
-  | 'noSymlink'
-  | 'onlyAttach'
-  | 'rollbackQueue'
-  | 'sourcePackagePath'
-  | 'syncPaths'
-  | 'targetPackagePath'
-> {
-  return {
+export const createIntermediatePackageTask = createTask(
+  (
+    context: PickContext<
+      | 'dependentPackageName'
+      | 'intermediateCacheDirectory'
+      | 'isExiting'
+      | 'noSymlink'
+      | 'onlyAttach'
+      | 'rollbackQueue'
+      | 'sourcePackagePath'
+      | 'syncPaths'
+      | 'targetPackagePath'
+    >,
+  ) => ({
     title: 'Creating intermediate package',
-    enabled(context) {
+    enabled() {
       return !context.isExiting && !context.noSymlink && !context.onlyAttach
     },
-    async rollback(context) {
+    async rollback() {
       await jetpack.removeAsync(
         getIntermediatePath(
           context.dependentPackageName,
@@ -29,13 +32,7 @@ export function createIntermediatePackageTask(): ContextualTaskWithRequired<
         ),
       )
     },
-    async task(context) {
-      context.rollbackQueue.push({
-        title: `Rollback: ${this.title}`,
-        task: this.tasks.rollback,
-      })
-
-      console.log(context.rollbackQueue)
+    async task() {
       const intermediatePath = getIntermediatePath(
         context.dependentPackageName,
         context.intermediateCacheDirectory,
@@ -55,5 +52,5 @@ export function createIntermediatePackageTask(): ContextualTaskWithRequired<
         )
       }
     },
-  }
-}
+  }),
+)

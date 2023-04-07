@@ -2,18 +2,21 @@ import chalk from 'chalk'
 
 import { getActiveRunsForPackage } from '@/lib/persistent-storage'
 import { isWatcherRunningForPackage } from '@/lib/pm2'
-import type { ContextualTaskWithRequired } from '@/lib/tasks'
+import type { PickContext } from '@/lib/tasks'
+import { createTask } from '@/lib/tasks'
 import { restoreOriginalVersion } from '@/lib/tasks/sync/restore-original-version'
 
-export function checkIntegrityIssues(): ContextualTaskWithRequired<
-  'dependentPackageName' | 'foregroundWatcher' | 'isExiting' | 'onlyAttach'
-> {
-  return {
-    enabled(context) {
+export const checkIntegrityIssues = createTask(
+  (
+    context: PickContext<
+      'dependentPackageName' | 'foregroundWatcher' | 'isExiting' | 'onlyAttach'
+    >,
+  ) => ({
+    enabled() {
       return !context.isExiting
     },
     title: 'Checking for integrity issues',
-    task: async (context, task): Promise<any> => {
+    task: async (_, task): Promise<any> => {
       const activeRuns = getActiveRunsForPackage(context.dependentPackageName)
 
       if (!activeRuns) {
@@ -26,16 +29,16 @@ export function checkIntegrityIssues(): ContextualTaskWithRequired<
       )
 
       if (!isWatcherRunning) {
-        return task.newListr(restoreOriginalVersion())
+        return task.newListr(restoreOriginalVersion(context))
       }
 
       const isForegroundWatcher = context.foregroundWatcher
 
       if (isForegroundWatcher) {
-        return task.newListr(restoreOriginalVersion())
+        return task.newListr(restoreOriginalVersion(context))
       }
 
       context.onlyAttach = true
     },
-  }
-}
+  }),
+)

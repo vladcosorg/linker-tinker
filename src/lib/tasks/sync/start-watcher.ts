@@ -1,26 +1,29 @@
 import { launchBackgroundWatcher } from '@/lib/pm2'
-import type { ContextualTaskWithRequired } from '@/lib/tasks'
+import type { PickContext } from '@/lib/tasks'
+import { createTask } from '@/lib/tasks'
 import { maybeRunDependencyWatcherTask } from '@/lib/tasks/sync/maybe-run-dependency-watcher-task'
 import { startReverseWatcherTask } from '@/lib/tasks/sync/start-reverse-watcher-task'
 import { startWatcherTask } from '@/lib/tasks/sync/start-watcher-task'
 import { watchUnlinksTask } from '@/lib/tasks/watch/watch-unlinks-task'
 
-export function startWatcher(): ContextualTaskWithRequired<
-  | 'bidirectionalSync'
-  | 'debug'
-  | 'dependentPackageName'
-  | 'foregroundWatcher'
-  | 'isExiting'
-  | 'onlyAttach'
-  | 'pendingBidirectionalUpdates'
-  | 'runWatcherScript'
-  | 'skipWatch'
-  | 'sourcePackagePath'
-  | 'syncPaths'
-  | 'targetPackagePath'
-  | 'watchAll'
-> {
-  return {
+export const startWatcher = createTask(
+  (
+    context: PickContext<
+      | 'bidirectionalSync'
+      | 'debug'
+      | 'dependentPackageName'
+      | 'foregroundWatcher'
+      | 'isExiting'
+      | 'onlyAttach'
+      | 'pendingBidirectionalUpdates'
+      | 'runWatcherScript'
+      | 'skipWatch'
+      | 'sourcePackagePath'
+      | 'syncPaths'
+      | 'targetPackagePath'
+      | 'watchAll'
+    >,
+  ) => ({
     // enabled: async (context) => {
     //   const isWatcherAlreadyRunning = await isWatcherRunningForPackage(
     //     context.dependentPackageName,
@@ -28,7 +31,7 @@ export function startWatcher(): ContextualTaskWithRequired<
     //   return !isWatcherAlreadyRunning
     // },
     title: 'Starting watcher',
-    task: async (context, task) => {
+    task: async (_, task) => {
       if (!context.foregroundWatcher) {
         task.title += ' [in background]'
         return launchBackgroundWatcher(context.dependentPackageName)
@@ -37,15 +40,15 @@ export function startWatcher(): ContextualTaskWithRequired<
       task.title += ' [in foreground]'
       return task.newListr(
         [
-          watchUnlinksTask(),
-          startWatcherTask(),
-          startReverseWatcherTask(),
-          maybeRunDependencyWatcherTask(),
+          watchUnlinksTask(context),
+          startWatcherTask(context),
+          startReverseWatcherTask(context),
+          maybeRunDependencyWatcherTask(context),
         ],
         {
           concurrent: true,
         },
       )
     },
-  }
-}
+  }),
+)

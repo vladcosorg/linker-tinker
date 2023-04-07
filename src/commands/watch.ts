@@ -8,10 +8,10 @@ import { runTasks } from '@/task-runner'
 export default class Watch extends Link {
   override async run(): Promise<void> {
     await runTasks(
-      [
-        verifyDependencyTask(),
-        verifyTargetTask(),
-        getPackListTask(),
+      (context) => [
+        verifyDependencyTask(context),
+        verifyTargetTask(context),
+        getPackListTask(context),
         runWatchersTask(),
       ],
       await this.getOptions(),

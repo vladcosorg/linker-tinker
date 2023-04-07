@@ -56,7 +56,7 @@ it('it should automatically reinstall a missing symlink', async () => {
   }
 
   await new Listr(
-    [installDependentPackageTask(), symlinkTask(subcontext)],
+    [installDependentPackageTask(subcontext), symlinkTask(subcontext)],
     config,
   ).run()
 

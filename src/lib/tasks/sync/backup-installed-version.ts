@@ -1,16 +1,12 @@
 import { attachActiveRun } from '@/lib/persistent-storage'
-import type { ContextualTaskWithRequired } from '@/lib/tasks'
+import type { PickContext } from '@/lib/tasks'
+import { createTask } from '@/lib/tasks'
 
-export function backupInstalledVersion(): ContextualTaskWithRequired<
-  'dependentPackageName' | 'targetPackagePath'
-> {
-  return {
+export const backupInstalledVersion = createTask(
+  (context: PickContext<'dependentPackageName' | 'targetPackagePath'>) => ({
     title: 'Saving original package configuration',
-    task: async ({
-      dependentPackageName,
-      targetPackagePath,
-    }): Promise<void> => {
-      await attachActiveRun({ dependentPackageName, targetPackagePath })
+    async task() {
+      await attachActiveRun(context)
     },
-  }
-}
+  }),
+)

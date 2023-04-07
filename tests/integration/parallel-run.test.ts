@@ -2,7 +2,7 @@ import execa from 'execa'
 import fs from 'fs-jetpack'
 import { expect, it } from 'vitest'
 
-import { runNpmInstallRoot } from '../../src/lib/run'
+import { runNpmInstallRoot } from '../../src/lib/executor'
 import { getFsHelpers } from '../unit/helpers'
 import { expectUntil } from '../util'
 

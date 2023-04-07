@@ -1,5 +1,4 @@
 import type { Context, RequiredContext } from '@/lib/context'
-import { createSubcontext } from '@/lib/context'
 
 import type {
   ListrDefaultRenderer,
@@ -28,31 +27,35 @@ export type ContextualTaskWithRequired<
   Renderer extends ListrRendererFactory = ListrDefaultRenderer,
 > = ContextualTask<RequiredContext<ContextKeys>, Renderer>
 
-export function createTaskk<
-  ContextKeys extends Array<keyof Context>,
-  Task extends (
-    subcontext: RequiredContext<ContextKeys[number]>,
-  ) => ContextualTask<RequiredContext<ContextKeys[number]>>,
->(
-  task: Task,
-  contextKeys: ContextKeys,
-): {
-  create: <T extends Pick<Context, ContextKeys[number]>>(
-    context: T,
-  ) => ContextualTask<RequiredContext<ContextKeys[number]>>
-  context: ContextKeys
-} {
-  return {
-    create: (fullContext) => task(createSubcontext(contextKeys, fullContext)),
-    context: contextKeys,
-  }
-}
-
 export type PickContext<T extends keyof Context> = Pick<Context, T>
 
-export function createTask<
-  T extends keyof Context,
-  LocalContext = PickContext<T>,
->(task: (scopedContext: LocalContext) => ListrTask<LocalContext>) {
-  return (fullContext: LocalContext) => task(fullContext)
+export function createTask<Arguments extends any[]>(
+  task: (...parameters: Arguments) => ListrTask,
+) {
+  return function (...parameters: Arguments): ListrTask {
+    return new Proxy(task(...parameters), {
+      get(...proxyParameters) {
+        const [target, property] = proxyParameters
+        if (property === 'task' && target.rollback !== undefined) {
+          return function (
+            context: Context,
+            task: ListrTaskWrapper<Context, any>,
+          ) {
+            if (!context.rollbackQueue) {
+              context.rollbackQueue = []
+            }
+
+            context.rollbackQueue.push({
+              title: `Rollback: ${task.title}`,
+              task: target.rollback!,
+            })
+
+            return target.task(context, task)
+          }
+        }
+
+        return Reflect.get(...proxyParameters)
+      },
+    })
+  }
 }

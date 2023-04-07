@@ -1,21 +1,21 @@
 import chalk from 'chalk'
 
-import type { RequiredContext } from '@/lib/context'
 import { getPackList } from '@/lib/packlist'
-import type { ContextualTask, ParentTask } from '@/lib/tasks'
+import type { ParentTask, PickContext } from '@/lib/tasks'
+import { createTask } from '@/lib/tasks'
 
-type LocalContext = RequiredContext<
+type LocalContext = PickContext<
   'debug' | 'sourcePackagePath' | 'syncPaths' | 'watchAll'
 >
-export function getGranularPackListTask(
-  parent: ParentTask<LocalContext>,
-): ContextualTask<LocalContext> {
-  return {
-    enabled(context) {
+
+export const getGranularPackListTask = createTask(
+  (context: LocalContext, parent: ParentTask<LocalContext>) => ({
+    title: "Extracting the files from the 'npm pack' command",
+    enabled() {
       return !context.watchAll
     },
-    title: "Extracting the files from the 'npm pack' command",
-    task: async (context) => {
+
+    task: async () => {
       context.syncPaths = await getPackList(context.sourcePackagePath)
 
       if (context.debug) {
@@ -29,5 +29,5 @@ export function getGranularPackListTask(
       )
     },
     exitOnError: false,
-  }
-}
+  }),
+)
