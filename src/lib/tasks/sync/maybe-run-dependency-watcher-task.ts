@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import execa from 'execa'
+import { execa } from 'execa'
 import { debug } from 'oclif/lib/log'
 
 import { terminate } from '@/lib/child-process'

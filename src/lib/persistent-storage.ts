@@ -1,5 +1,5 @@
 import Conf from 'conf'
-import { merge, omit } from 'lodash'
+import _ from 'lodash'
 
 import { debugConsole } from '@/lib/debug'
 import { eventBus } from '@/lib/event-emitter'
@@ -70,7 +70,7 @@ export function getActiveRunsForPackage(dependencyPackage: string) {
 export function resetActiveRunsForPackage(dependencyPackage: string) {
   const activeRuns = getAllActiveRuns()
   const storage = createOrGetPersistentStorage()
-  storage.set('activeRuns', omit(activeRuns, dependencyPackage))
+  storage.set('activeRuns', _.omit(activeRuns, dependencyPackage))
 }
 
 export function resetActiveRunForPackage(
@@ -87,7 +87,7 @@ export function resetActiveRunForPackage(
 
   storage.set('activeRuns', {
     ...activeRuns,
-    [dependencyPackage]: omit(activeRuns[dependencyPackage], targetPath),
+    [dependencyPackage]: _.omit(activeRuns[dependencyPackage], targetPath),
   })
 }
 
@@ -133,7 +133,7 @@ export async function attachActiveRun({
 
   storage.set(
     'activeRuns',
-    merge(storage.get('activeRuns'), {
+    _.merge(storage.get('activeRuns'), {
       [dependentPackageName]: {
         [targetPackagePath]: packageConfig ?? null,
       },

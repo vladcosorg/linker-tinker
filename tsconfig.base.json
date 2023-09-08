@@ -2,8 +2,8 @@
   "extends": "chetzof-lint-config/tsconfig/tsconfig.json",
   "compilerOptions": {
     "baseUrl": "./",
-    "module": "commonjs",
-    "target": "es2019",
+    "module": "ES2022",
+    "moduleResolution": "node",
     "paths": {
       "@/*": ["./src/*"]
     }
@@ -13,6 +13,7 @@
     "logError": true,
     "transpileOnly": true,
     "files": true,
-    "experimentalResolver": true
+    "experimentalResolver": false,
+    "esm": true
   }
 }

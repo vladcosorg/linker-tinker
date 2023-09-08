@@ -1,4 +1,4 @@
-import execa from 'execa'
+import { execa } from 'execa'
 import { createPromiseMixin } from 'promise-supplement'
 
 import { debugConsole } from '@/lib/debug'

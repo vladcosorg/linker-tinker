@@ -2,7 +2,7 @@ import path from 'node:path'
 
 import { copy } from 'fs-extra'
 import jetpack from 'fs-jetpack'
-import { pick } from 'lodash'
+import _ from 'lodash'
 
 import type { Entries } from 'type-fest'
 
@@ -37,9 +37,9 @@ export async function getInstalledPackageConfiguration(
   | undefined
 > {
   const packageJson = await getPackageJson(rootPackagePath)
-  const fields = pick(packageJson, ...dependencyTypes)
+  const fields = _.pick(packageJson, ...dependencyTypes)
   for (const [dependencyType, dependencies] of Object.entries(
-    pick(packageJson, ...dependencyTypes),
+    _.pick(packageJson, ...dependencyTypes),
   ) as Entries<typeof fields>) {
     const versionRange = dependencies[dependentPackageName]
     if (versionRange) {

@@ -4,8 +4,8 @@
   "description": "oclif example Hello World CLI",
   "author": "chetzof @chetzof",
   "bin": {
-    "link-and-tink": "./bin/run",
-    "lnt": "./bin/run"
+    "link-and-tink": "./bin/run.js",
+    "lnt": "./bin/run.js"
   },
   "prettier": "chetzof-lint-config/prettier/.prettierrc.js",
   "homepage": "https://github.com/chetzof/link-and-tink",
@@ -19,6 +19,7 @@
     "/oclif.manifest.json"
   ],
   "dependencies": {
+    "@bleed-believer/path-alias": "^0.14.0",
     "@npmcli/arborist": "^6.2.7",
     "@oclif/core": "^2.8.0",
     "@oclif/plugin-autocomplete": "^2.1.8",
@@ -29,7 +30,7 @@
     "chalk": "4.1.2",
     "chokidar": "^3.5.3",
     "conf": "^10.2.0",
-    "execa": "^5.1.1",
+    "execa": "^7.1.1",
     "fs-extra": "^11.1.1",
     "fs-jetpack": "^5.1.0",
     "listr2": "^5.0.8",
@@ -38,7 +39,6 @@
     "npm-packlist": "^7.0.4",
     "pidtree": "^0.6.0",
     "pm2": "^5.3.0",
-    "promise-supplement": "^1.0.5",
     "promised-gateway": "^1.1.0",
     "tiny-typed-emitter": "^2.1.0",
     "tsconfig-paths": "^4.2.0",
@@ -65,6 +65,7 @@
     "ts-node": "^10.9.1",
     "tsc-alias": "^1.8.5",
     "tslib": "^2.5.0",
+    "tsx": "^3.12.6",
     "type-fest": "^3.8.0",
     "typescript": "^5.0.3",
     "vite-tsconfig-paths": "^4.0.8",
@@ -79,7 +80,6 @@
     "plugins": [
       "@oclif/plugin-help",
       "@oclif/plugin-autocomplete",
-      "@oclif/plugin-warn-if-update-available",
       "@oclif/plugin-not-found"
     ]
   },
@@ -116,5 +116,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "type": "module"
 }
