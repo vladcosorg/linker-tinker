@@ -1,11 +1,33 @@
 // @ts-check
 const { defineConfig } = require('eslint-define-config')
 module.exports = defineConfig({
+  "env": {
+    "jest": true,
+    "node": true
+  },
   extends: [
-    'oclif',
-    'oclif-typescript',
-    './node_modules/chetzof-lint-config/eslint/index.js',
+    "@vladcos/eslint-config"
   ],
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx"
+      ]
+    },
+    "import/resolver": {
+      "node": {},
+      "typescript": {
+        "project": "./tsconfig.json",
+        "alwaysTryTypes": true
+      }
+    }
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
   overrides: [
     {
       files: ['src/index.ts', 'src/commands/**/*.ts'],

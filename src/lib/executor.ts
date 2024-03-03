@@ -1,5 +1,5 @@
 import { execa } from 'execa'
-import { createPromiseMixin } from 'promise-supplement'
+import { createPromiseMixin } from 'promise-mixin'
 
 import { debugConsole } from '@/lib/debug'
 import { eventBus } from '@/lib/event-emitter'
@@ -7,7 +7,7 @@ import type { dependencyTypes as dependencyTypeList } from '@/lib/misc'
 
 import type { ExecaChildProcess } from 'execa'
 
-export const cancellableExeca = function (
+export const cancellableExeca = async function (
   ...parameters: Parameters<typeof execa>
 ) {
   debugConsole.log(parameters)
@@ -50,7 +50,7 @@ export const cancellableExeca = function (
 
 const activeProcesses: Record<string, ExecaChildProcess> = {}
 
-export function abortableExeca(
+export async function abortableExeca(
   id: string,
   command: string,
   commandArguments?: readonly string[],
@@ -118,6 +118,16 @@ export function runNpmInstall(
 
   return cancellableExeca('npm', options, {
     cwd: rootPackagePath,
+    all: true,
+    shell: true,
+  })
+}
+
+export function cloneRepo(
+  repoUrl: string,
+  destinationPath: string,
+): ExecaChildProcess {
+  return cancellableExeca('git', ['clone', repoUrl, destinationPath], {
     all: true,
     shell: true,
   })

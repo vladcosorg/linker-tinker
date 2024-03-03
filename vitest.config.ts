@@ -16,6 +16,7 @@ export default defineConfig({
       inline: ['vitest-mock-process'],
     },
     clearMocks: true,
+    threads: false,
     globals: true,
     include: ['tests/**/*.test.ts'],
   },

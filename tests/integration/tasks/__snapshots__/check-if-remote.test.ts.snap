@@ -1,0 +1,431 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should clone the remote repo and install it 1`] = `
+[
+  [
+    {
+      "data": "STARTED",
+      "event": "STATE",
+      "task": {
+        "hasFailed": false,
+        "hasFinalized": false,
+        "hasReset": false,
+        "hasRolledBack": false,
+        "hasSubtasks": false,
+        "hasTitle": true,
+        "isCompleted": false,
+        "isEnabled": true,
+        "isPaused": false,
+        "isPending": true,
+        "isPrompt": false,
+        "isRetrying": false,
+        "isRollingBack": false,
+        "isSkipped": false,
+        "isStarted": true,
+        "path": [
+          "Checking if it is a remote package",
+        ],
+        "title": "Checking if it is a remote package",
+      },
+    },
+  ],
+  [
+    {
+      "data": "Cloning the repo [1mgit@github.com:chalk/chalk.git[22m",
+      "event": "TITLE",
+      "task": {
+        "hasFailed": false,
+        "hasFinalized": false,
+        "hasReset": false,
+        "hasRolledBack": false,
+        "hasSubtasks": false,
+        "hasTitle": true,
+        "isCompleted": false,
+        "isEnabled": true,
+        "isPaused": false,
+        "isPending": true,
+        "isPrompt": false,
+        "isRetrying": false,
+        "isRollingBack": false,
+        "isSkipped": false,
+        "isStarted": true,
+        "path": [
+          "Checking if it is a remote package",
+        ],
+        "title": "Cloning the repo [1mgit@github.com:chalk/chalk.git[22m",
+      },
+    },
+  ],
+  [
+    {
+      "data": "Installing the repo local repository",
+      "event": "OUTPUT",
+      "task": {
+        "hasFailed": false,
+        "hasFinalized": false,
+        "hasReset": false,
+        "hasRolledBack": false,
+        "hasSubtasks": false,
+        "hasTitle": true,
+        "isCompleted": false,
+        "isEnabled": true,
+        "isPaused": false,
+        "isPending": true,
+        "isPrompt": false,
+        "isRetrying": false,
+        "isRollingBack": false,
+        "isSkipped": false,
+        "isStarted": true,
+        "path": [
+          "Checking if it is a remote package",
+        ],
+        "title": "Cloning the repo [1mgit@github.com:chalk/chalk.git[22m",
+      },
+    },
+  ],
+  [
+    {
+      "data": "COMPLETED",
+      "event": "STATE",
+      "task": {
+        "hasFailed": false,
+        "hasFinalized": true,
+        "hasReset": false,
+        "hasRolledBack": false,
+        "hasSubtasks": false,
+        "hasTitle": true,
+        "isCompleted": true,
+        "isEnabled": true,
+        "isPaused": false,
+        "isPending": false,
+        "isPrompt": false,
+        "isRetrying": false,
+        "isRollingBack": false,
+        "isSkipped": false,
+        "isStarted": false,
+        "path": [
+          "Checking if it is a remote package",
+        ],
+        "title": "Cloning the repo [1mgit@github.com:chalk/chalk.git[22m",
+      },
+    },
+  ],
+]
+`;
+
+exports[`should clone the remote repo and install it 2`] = `[]`;
+
+exports[`should reuse an existing repo if it was already cloned and then install it 1`] = `
+[
+  [
+    {
+      "data": "STARTED",
+      "event": "STATE",
+      "task": {
+        "hasFailed": false,
+        "hasFinalized": false,
+        "hasReset": false,
+        "hasRolledBack": false,
+        "hasSubtasks": false,
+        "hasTitle": true,
+        "isCompleted": false,
+        "isEnabled": true,
+        "isPaused": false,
+        "isPending": true,
+        "isPrompt": false,
+        "isRetrying": false,
+        "isRollingBack": false,
+        "isSkipped": false,
+        "isStarted": true,
+        "path": [
+          "Checking if it is a remote package",
+        ],
+        "title": "Checking if it is a remote package",
+      },
+    },
+  ],
+  [
+    {
+      "data": "Cloning the repo [1mgit@github.com:chalk/chalk.git[22m",
+      "event": "TITLE",
+      "task": {
+        "hasFailed": false,
+        "hasFinalized": false,
+        "hasReset": false,
+        "hasRolledBack": false,
+        "hasSubtasks": false,
+        "hasTitle": true,
+        "isCompleted": false,
+        "isEnabled": true,
+        "isPaused": false,
+        "isPending": true,
+        "isPrompt": false,
+        "isRetrying": false,
+        "isRollingBack": false,
+        "isSkipped": false,
+        "isStarted": true,
+        "path": [
+          "Checking if it is a remote package",
+        ],
+        "title": "Cloning the repo [1mgit@github.com:chalk/chalk.git[22m",
+      },
+    },
+  ],
+  [
+    {
+      "data": "Installing the repo local repository",
+      "event": "OUTPUT",
+      "task": {
+        "hasFailed": false,
+        "hasFinalized": false,
+        "hasReset": false,
+        "hasRolledBack": false,
+        "hasSubtasks": false,
+        "hasTitle": true,
+        "isCompleted": false,
+        "isEnabled": true,
+        "isPaused": false,
+        "isPending": true,
+        "isPrompt": false,
+        "isRetrying": false,
+        "isRollingBack": false,
+        "isSkipped": false,
+        "isStarted": true,
+        "path": [
+          "Checking if it is a remote package",
+        ],
+        "title": "Cloning the repo [1mgit@github.com:chalk/chalk.git[22m",
+      },
+    },
+  ],
+  [
+    {
+      "data": "COMPLETED",
+      "event": "STATE",
+      "task": {
+        "hasFailed": false,
+        "hasFinalized": true,
+        "hasReset": false,
+        "hasRolledBack": false,
+        "hasSubtasks": false,
+        "hasTitle": true,
+        "isCompleted": true,
+        "isEnabled": true,
+        "isPaused": false,
+        "isPending": false,
+        "isPrompt": false,
+        "isRetrying": false,
+        "isRollingBack": false,
+        "isSkipped": false,
+        "isStarted": false,
+        "path": [
+          "Checking if it is a remote package",
+        ],
+        "title": "Cloning the repo [1mgit@github.com:chalk/chalk.git[22m",
+      },
+    },
+  ],
+  [
+    {
+      "data": "STARTED",
+      "event": "STATE",
+      "task": {
+        "hasFailed": false,
+        "hasFinalized": false,
+        "hasReset": false,
+        "hasRolledBack": false,
+        "hasSubtasks": false,
+        "hasTitle": true,
+        "isCompleted": false,
+        "isEnabled": true,
+        "isPaused": false,
+        "isPending": true,
+        "isPrompt": false,
+        "isRetrying": false,
+        "isRollingBack": false,
+        "isSkipped": false,
+        "isStarted": true,
+        "path": [
+          "Checking if it is a remote package",
+        ],
+        "title": "Checking if it is a remote package",
+      },
+    },
+  ],
+  [
+    {
+      "data": "Using the cloned repository",
+      "event": "TITLE",
+      "task": {
+        "hasFailed": false,
+        "hasFinalized": false,
+        "hasReset": false,
+        "hasRolledBack": false,
+        "hasSubtasks": false,
+        "hasTitle": true,
+        "isCompleted": false,
+        "isEnabled": true,
+        "isPaused": false,
+        "isPending": true,
+        "isPrompt": false,
+        "isRetrying": false,
+        "isRollingBack": false,
+        "isSkipped": false,
+        "isStarted": true,
+        "path": [
+          "Checking if it is a remote package",
+        ],
+        "title": "Using the cloned repository",
+      },
+    },
+  ],
+  [
+    {
+      "data": "Installing the repo local repository",
+      "event": "OUTPUT",
+      "task": {
+        "hasFailed": false,
+        "hasFinalized": false,
+        "hasReset": false,
+        "hasRolledBack": false,
+        "hasSubtasks": false,
+        "hasTitle": true,
+        "isCompleted": false,
+        "isEnabled": true,
+        "isPaused": false,
+        "isPending": true,
+        "isPrompt": false,
+        "isRetrying": false,
+        "isRollingBack": false,
+        "isSkipped": false,
+        "isStarted": true,
+        "path": [
+          "Checking if it is a remote package",
+        ],
+        "title": "Using the cloned repository",
+      },
+    },
+  ],
+  [
+    {
+      "data": "COMPLETED",
+      "event": "STATE",
+      "task": {
+        "hasFailed": false,
+        "hasFinalized": true,
+        "hasReset": false,
+        "hasRolledBack": false,
+        "hasSubtasks": false,
+        "hasTitle": true,
+        "isCompleted": true,
+        "isEnabled": true,
+        "isPaused": false,
+        "isPending": false,
+        "isPrompt": false,
+        "isRetrying": false,
+        "isRollingBack": false,
+        "isSkipped": false,
+        "isStarted": false,
+        "path": [
+          "Checking if it is a remote package",
+        ],
+        "title": "Using the cloned repository",
+      },
+    },
+  ],
+]
+`;
+
+exports[`should reuse an existing repo if it was already cloned and then install it 2`] = `[]`;
+
+exports[`should skip if the provided package name is a path 1`] = `
+[
+  [
+    {
+      "data": "STARTED",
+      "event": "STATE",
+      "task": {
+        "hasFailed": false,
+        "hasFinalized": false,
+        "hasReset": false,
+        "hasRolledBack": false,
+        "hasSubtasks": false,
+        "hasTitle": true,
+        "isCompleted": false,
+        "isEnabled": true,
+        "isPaused": false,
+        "isPending": true,
+        "isPrompt": false,
+        "isRetrying": false,
+        "isRollingBack": false,
+        "isSkipped": false,
+        "isStarted": true,
+        "path": [
+          "Checking if it is a remote package",
+        ],
+        "title": "Checking if it is a remote package",
+      },
+    },
+  ],
+  [
+    {
+      "data": "Checking if it is a remote package[32m[NO][39m",
+      "event": "TITLE",
+      "task": {
+        "hasFailed": false,
+        "hasFinalized": false,
+        "hasReset": false,
+        "hasRolledBack": false,
+        "hasSubtasks": false,
+        "hasTitle": true,
+        "isCompleted": false,
+        "isEnabled": true,
+        "isPaused": false,
+        "isPending": true,
+        "isPrompt": false,
+        "isRetrying": false,
+        "isRollingBack": false,
+        "isSkipped": false,
+        "isStarted": true,
+        "path": [
+          "Checking if it is a remote package",
+        ],
+        "title": "Checking if it is a remote package[32m[NO][39m",
+      },
+    },
+  ],
+  [
+    {
+      "data": "COMPLETED",
+      "event": "STATE",
+      "task": {
+        "hasFailed": false,
+        "hasFinalized": true,
+        "hasReset": false,
+        "hasRolledBack": false,
+        "hasSubtasks": false,
+        "hasTitle": true,
+        "isCompleted": true,
+        "isEnabled": true,
+        "isPaused": false,
+        "isPending": false,
+        "isPrompt": false,
+        "isRetrying": false,
+        "isRollingBack": false,
+        "isSkipped": false,
+        "isStarted": false,
+        "path": [
+          "Checking if it is a remote package",
+        ],
+        "title": "Checking if it is a remote package[32m[NO][39m",
+      },
+    },
+  ],
+]
+`;
+
+exports[`should skip if the provided package name is a path 2`] = `[]`;
+
+exports[`should throw error if a package without information about repository is specified 1`] = `"The package @vladcos/prettier-config does not have a source repo specified"`;
+
+exports[`should throw error if an invalid package is specified 1`] = `"The package foo-bar-vladcos does not have a source repo specified"`;

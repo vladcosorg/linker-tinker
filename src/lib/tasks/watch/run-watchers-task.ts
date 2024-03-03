@@ -22,9 +22,8 @@ export function runWatchersTask(): ContextualTaskWithRequired<
     //   return !context.skipWatch && !context.isExiting && !context.onlyAttach
     // },
     title: 'Running watchers',
-    task: (_context, task): any => {
-      console.log('aaaaa')
-      return task.newListr(
+    task: (_context, task): any =>
+      task.newListr(
         [
           watchUnlinksTask(),
           startWatcherTask(),
@@ -34,7 +33,6 @@ export function runWatchersTask(): ContextualTaskWithRequired<
         {
           concurrent: false,
         },
-      )
-    },
+      ),
   }
 }

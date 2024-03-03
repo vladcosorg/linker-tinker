@@ -60,18 +60,25 @@ export default class Link extends BaseCommand<typeof Link> {
         '`npm pack`',
       )}`,
     }),
-    watcherScript: Flags.string({
+    runDependencyWatcher: Flags.boolean({
       char: 'w',
+      description: `Runs the ${chalk.bold(
+        '"watch"',
+      )} task automatically if present on the target package`,
+      default: false,
+    }),
+    watcherScript: Flags.string({
+      char: 'n',
       description:
-        'Name of the watcher script in the dependent package.json to be executed. It will fail if the script prematurely or does not exist.',
+        'Name of the watcher script in the dependent package.json to be executed. It will fail if the script exits prematurely or does not exist.',
     }),
   }
 
   async run(): Promise<void> {
     await runTasks(
       (context) => [
-        verifyDependencyTask(context),
         verifyTargetTask(context),
+        verifyDependencyTask(context),
         checkIntegrityIssues(context),
         initializeStorageTask(context),
         backupInstalledVersion(context),
@@ -93,10 +100,12 @@ export default class Link extends BaseCommand<typeof Link> {
       ctx: await this.createContext({
         skipWatch: this.flags.skipWatch,
         noSymlink: this.flags.noSymlink,
-        sourcePackagePath: path.resolve(this.args.from),
+        sourcePackagePath: this.args.from,
         targetPackagePath: path.resolve(this.args.to),
         syncPaths: path.resolve(this.args.from),
-        runWatcherScript: this.flags.watcherScript,
+        runWatcherScript: this.flags.runDependencyWatcher
+          ? this.flags.watcherScript ?? 'watch'
+          : undefined,
         bidirectionalSync: this.flags.bidirectionalSync,
         watchAll: this.flags.watchAll,
         pendingBidirectionalUpdates: { fromSource: [], toSource: [] },

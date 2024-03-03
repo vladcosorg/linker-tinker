@@ -18,23 +18,24 @@ export const checkIfIsValidNodePackageTask = createTask(
       parentTask,
       isRoot,
     }: {
-      packagePath: string
+      packagePath: () => string
       parentTask?: ParentTask<LocalContext>
       isRoot: boolean
     },
   ) => ({
     title: 'Checking if the path is a valid node package',
     task: async (_, task) => {
+      const path = packagePath()
       // eslint-disable-next-line no-unused-expressions
       isRoot
-        ? await validateRootPackage(packagePath)
-        : await validateDependentPackage(packagePath)
+        ? await validateRootPackage(path)
+        : await validateDependentPackage(path)
 
       if (!isRoot) {
-        context.dependentPackageName = await getPackageName(packagePath)
+        context.dependentPackageName = await getPackageName(path)
       }
 
-      const name = await getPackageNiceName(packagePath)
+      const name = await getPackageNiceName(path)
 
       task.output = `Found package ${name}`
 

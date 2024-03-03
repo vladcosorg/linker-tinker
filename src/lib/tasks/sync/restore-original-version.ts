@@ -13,8 +13,8 @@ export const restoreOriginalVersion = createTask(
     enabled() {
       return !context.onlyAttach
     },
-    title: 'Restoring original version',
     task: async (_, task): Promise<void> => {
+      task.title = 'Restoring original version'
       const runs = getActiveRunsForPackage(context.dependentPackageName)
       if (!runs) {
         return

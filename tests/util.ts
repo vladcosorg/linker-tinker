@@ -65,8 +65,11 @@ export async function waitUntiltoHaveBeenCalledWith(
   try {
     await waitUntilTrue(
       () =>
-        spy.mock.calls.some((callArgument) =>
-          isEqual(callArgument, expectedCallArguments),
+      spy.mock.calls.some((callArgument) =>
+        {
+          console.log(callArgument, expectedCallArguments);
+          return isEqual(callArgument, expectedCallArguments)
+        },
         ),
       options,
     )

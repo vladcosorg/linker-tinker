@@ -15,11 +15,11 @@ export const verifyTargetTask = createTask(
     },
     task: (_, task) =>
       task.newListr((parentTask) => [
-        checkIfThePathExistsTask(context.targetPackagePath),
+        checkIfThePathExistsTask(() => context.targetPackagePath),
         checkIfIsValidNodePackageTask(context, {
           isRoot: true,
           parentTask,
-          packagePath: context.targetPackagePath,
+          packagePath: () => context.targetPackagePath,
         }),
       ]),
   }),
